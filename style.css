@@ -320,7 +320,7 @@ a {
   line-height: var(--heading-line-height);
 }
 .display-lg {
-  font-size: calc(9rem);
+  font-size: 9rem;
   font-weight: var(--heading-font-weight);
   letter-spacing: -0.06em;
   line-height: var(--heading-line-height);
@@ -676,3 +676,4 @@ width: 95%;
   }
 
 }
+
