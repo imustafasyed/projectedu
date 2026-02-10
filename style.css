@@ -320,7 +320,7 @@ a {
   line-height: 1.5em; 
 }
 .display-lg {
-  font-size: calc(2rem + 8.5vw);
+  font-size: 11rem;
   font-weight: var(--heading-font-weight);
   letter-spacing: -0.06em;
   line-height: var(--heading-line-height);
@@ -676,6 +676,7 @@ width: 95%;
   }
 
 }
+
 
 
 
