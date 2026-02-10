@@ -314,13 +314,13 @@ a {
 
 /* extra classes */
 .display-xl {
-  font-size: calc(3rem + 8.5vw);
+  font-size: calc(3rem + 8.8vw);
   font-weight: var(--heading-font-weight);
   letter-spacing: -0.06em;
-  line-height: 1.2em !important; 
+  line-height: var(--heading-line-height); 
 }
 .display-lg {
-  font-size: 11rem;
+  font-size: calc(2.4rem + 8.5vw);
   font-weight: var(--heading-font-weight);
   letter-spacing: -0.06em;
   line-height: var(--heading-line-height);
@@ -676,6 +676,7 @@ width: 95%;
   }
 
 }
+
 
 
 
