@@ -1,0 +1,41 @@
+<!doctype html> <!-- This says: “I am a web page” -->
+<html lang="en"> <!-- This starts the page -->
+<head> <!-- Hidden settings for the page -->
+  <meta charset="utf-8"> <!-- Makes text show correctly -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Helps on mobile screens -->
+  <title>Visualizations</title> <!-- The tab title -->
+
+  <link rel="stylesheet" href="style.css"> <!-- Uses your existing CSS style file -->
+</head> <!-- End of hidden settings -->
+
+<body> <!-- Everything people see goes here -->
+  <header> <!-- Top area -->
+    <h1>My Video Game Visualizations</h1> <!-- Big heading -->
+    <p>These charts are hosted on GitHub Pages and drawn with Vega-Lite.</p> <!-- Description -->
+    <p><a href="index.html">⬅ Back to Home</a></p> <!-- Link back to home page -->
+  </header> <!-- End header -->
+
+  <hr> <!-- A line -->
+
+  <h2>Visualization 1: Global Sales by Genre and Platform</h2> <!-- Section title -->
+  <div id="vis1"></div> <!-- Chart 1 will appear here -->
+
+  <h2>Visualization 2: Sales Over Time by Platform and Genre</h2> <!-- Section title -->
+  <div id="vis2"></div> <!-- Chart 2 will appear here -->
+
+  <h2>Visualization 3: Regional Sales vs Platform</h2> <!-- Section title -->
+  <div id="vis3"></div> <!-- Chart 3 will appear here -->
+
+  <h2>Visualization 4: Japan Share vs Global Sales (Story)</h2> <!-- Section title -->
+  <div id="vis4"></div> <!-- Chart 4 will appear here -->
+
+  <!-- These 3 scripts are the Vega tools that draw the charts -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script> <!-- Vega (drawing engine) -->
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script> <!-- Vega-Lite (chart language) -->
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script> <!-- Vega-Embed (puts chart into the page) -->
+
+  <!-- This is YOUR script that defines the 4 charts -->
+  <script src="js/visualizations.js"></script> <!-- Loads your chart code -->
+</body> <!-- End visible content -->
+</html> <!-- End page -->
+``
