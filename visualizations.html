@@ -179,63 +179,86 @@
             </div>
 
             <!-- Chart cards -->
-            <div class="row justify-content-center g-4">
-              <div class="col-lg-10">
-                <div class="card shadow-sm vis-card">
-                  <div class="card-body p-4">
-                    <h3 class="h4 mb-1">1) Global Sales by Genre and Platform</h3>
-                    <p class="text-muted mb-3">
-                      <strong>Q1:</strong> Which genre–platform combinations generate the highest total global sales?
-                      <br>
-                      <strong>Q2:</strong> Do a few platforms dominate across many genres?
-                    </p>
-                    <div id="vis1" class="vis-box">Loading chart…</div>
-                  </div>
-                </div>
-              </div>
+           <!-- ============================= -->
+<!-- Charts Section (UPDATED)      -->
+<!-- ============================= -->
 
-              <div class="col-lg-10">
-                <div class="card shadow-sm vis-card">
-                  <div class="card-body p-4">
-                    <h3 class="h4 mb-1">2) Sales Over Time by Platform and Genre</h3>
-                    <p class="text-muted mb-3">
-                      <strong>Q1:</strong> How do sales evolve over time for platforms within a chosen genre?
-                      <br>
-                      <strong>Q2:</strong> Are there noticeable “peak years” for specific platforms?
-                    </p>
-                    <div id="vis2" class="vis-box">Loading chart…</div>
-                  </div>
-                </div>
-              </div>
+<!-- Chart #1 (normal width like before) -->
+<div class="row justify-content-center g-4"> <!-- Centered grid with spacing -->
+  <div class="col-lg-10"> <!-- Normal width like your site content -->
+    <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="0"> <!-- AOS fade animation -->
+      <div class="card-body p-4"> <!-- Padding inside the card -->
+        <h3 class="h4 mb-1">1) Global Sales by Genre and Platform</h3> <!-- Title -->
+        <p class="text-muted mb-3"> <!-- Description -->
+          <strong>Q1:</strong> Which genre–platform combinations generate the highest total global sales?
+          <br>
+          <strong>Q2:</strong> Do a few platforms dominate across many genres?
+        </p>
+        <div id="vis1" class="vis-box">Loading chart…</div> <!-- Chart container -->
+      </div>
+    </div>
+  </div>
+</div>
 
-              <div class="col-lg-10">
-                <div class="card shadow-sm vis-card">
-                  <div class="card-body p-4">
-                    <h3 class="h4 mb-1">3) Regional Sales vs Platform</h3>
-                    <p class="text-muted mb-3">
-                      <strong>Q1:</strong> For each platform, which region contributes the most total sales?
-                      <br>
-                      <strong>Q2:</strong> Do platforms show strong regional preference patterns?
-                    </p>
-                    <div id="vis3" class="vis-box">Loading chart…</div>
-                  </div>
-                </div>
-              </div>
+<!-- Charts #2, #3, #4 (wider layout) -->
+<div class="container-fluid px-0 mt-4"> <!-- Full width inside main area -->
+  <div class="row g-4"> <!-- Full width grid -->
 
-              <div class="col-lg-10">
-                <div class="card shadow-sm vis-card">
-                  <div class="card-body p-4">
-                    <h3 class="h4 mb-1">4) Visual Story — Japan Share vs Global Sales</h3>
-                    <p class="text-muted mb-3">
-                      <strong>Q1:</strong> Which games appear “Japan‑centric” (high JP share of global sales)?
-                      <br>
-                      <strong>Q2:</strong> Do Japan‑centric games cluster by genre or platform?
-                    </p>
-                    <div id="vis4" class="vis-box">Loading chart…</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <!-- Chart #2 (WIDE) -->
+    <div class="col-12"> <!-- Full width -->
+      <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="100"> <!-- AOS with delay -->
+        <div class="card-body p-4"> <!-- Padding -->
+          <h3 class="h4 mb-1">2) Sales Over Time by Platform and Genre</h3> <!-- Title -->
+          <p class="text-muted mb-3"> <!-- Description -->
+            <strong>Q1:</strong> How do sales evolve over time for platforms within a chosen genre?
+            <br>
+            <strong>Q2:</strong> Are there noticeable “peak years” for specific platforms?
+          </p>
+          <div id="vis2" class="vis-box-wide">Loading chart…</div> <!-- Wider chart container -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart #3 (WIDE) -->
+    <div class="col-12"> <!-- Full width -->
+      <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="200"> <!-- AOS with delay -->
+        <div class="card-body p-4">
+          <h3 class="h4 mb-1">3) Regional Sales vs Platform</h3>
+          <p class="text-muted mb-3">
+            <strong>Q1:</strong> For each platform, which region contributes the most total sales?
+            <br>
+            <strong>Q2:</strong> Do platforms show strong regional preference patterns?
+          </p>
+          <div id="vis3" class="vis-box-wide">Loading chart…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart #4 (WIDE) -->
+    <div class="col-12"> <!-- Full width -->
+      <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="300"> <!-- AOS with delay -->
+        <div class="card-body p-4">
+          <h3 class="h4 mb-1">4) Visual Story — Japan Share vs Global Sales</h3>
+          <p class="text-muted mb-3">
+            <strong>Q1:</strong> Which games appear “Japan‑centric” (high JP share of global sales)?
+            <br>
+            <strong>Q2:</strong> Do Japan‑centric games cluster by genre or platform?
+          </p>
+          <div id="vis4" class="vis-box-wide">Loading chart…</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- Add this CSS in your <style>  -->
+<!-- ============================= -->
+<style>
+  .vis-box { min-height: 460px; } /* Normal chart area height */
+  .vis-box-wide { min-height: 560px; } /* Bigger charts for #2-#4 */
+</style>
 
           </section>
         </div>
