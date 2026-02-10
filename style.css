@@ -320,10 +320,10 @@ a {
   line-height: var(--heading-line-height);
 }
 .display-lg {
-  font-size: 9rem;
+  font-size: calc(2rem + 8.5vw);
   font-weight: var(--heading-font-weight);
   letter-spacing: -0.06em;
-  line-height: var(--heading-line-height);
+  line-height: 1.5em;
 }
 
 /* mobile menu */
@@ -676,4 +676,5 @@ width: 95%;
   }
 
 }
+
 
