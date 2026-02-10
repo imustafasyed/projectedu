@@ -319,6 +319,12 @@ a {
   letter-spacing: -0.06em;
   line-height: var(--heading-line-height);
 }
+.display-lg {
+  font-size: calc(9rem);
+  font-weight: var(--heading-font-weight);
+  letter-spacing: -0.06em;
+  line-height: var(--heading-line-height);
+}
 
 /* mobile menu */
 /*----- Header Menu
@@ -668,4 +674,5 @@ width: 95%;
   .bg-text:after {
     right: 0;
   }
+
 }
