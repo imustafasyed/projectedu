@@ -20,56 +20,28 @@ function showError(targetId, err) { // Show readable errors on the page //
 
 window.addEventListener("load", async () => { // Run after page is fully loaded //
 
-
-
-
-
-
-  /* visualizations.js
-   Update: Vis 1 embeds into #vis1 .vis-inner and matches Vis 2–4 wide size (1200px) */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  // -------------------------------
-  // VIS 1 — UPDATED TARGET + SIZE
-  // -------------------------------
-
-  // 1) Your existing Vis 1 spec object (keep your encodings/data exactly as-is)
-  //    Just ensure you set width/height + autosize like below.
-  const vis1Spec = {
-    // --- keep EVERYTHING you already have here (data, mark, encoding, etc.) ---
-    // Example placeholders below: replace with your actual spec content
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-    "description": "Global Sales by Genre and Platform",
-    "data": { "url": "data/vgsales.csv" },  // <-- keep your existing path
-    "mark": "bar",
-    "encoding": {
-      "x": { "field": "Genre", "type": "nominal" },
-      "y": { "aggregate": "sum", "field": "Global_Sales", "type": "quantitative" },
-      "color": { "field": "Platform", "type": "nominal" }
-    },
-
-    // ✅ ADD/OVERRIDE THESE THREE LINES to match Vis 2–4 wide layout
-    "width": 1200,                 // forces Vis 1 to be same wide width as others
-    "height": 520,                 // makes it visually similar inside 620px container
-    "autosize": { "type": "none" } // ensures width/height are respected (no shrinking)
+  /* ---------------- VIS 1 ---------------- */
+  const spec1 = {
+    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    data: { url: dataUrl },
+    width: "container",
+    height: 420,
+    autosize: { type: "fit", contains: "padding" },
+    transform: [
+      { aggregate: [{ op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }], groupby: ["Genre", "Platform"] }
+    ],
+    mark: "rect",
+    encoding: {
+      x: { field: "Platform", type: "nominal", axis: { labelAngle: -40 }, title: "Platform" },
+      y: { field: "Genre", type: "nominal", title: "Genre" },
+      color: { field: "Total_Global_Sales", type: "quantitative", title: "Total Global Sales", scale: { scheme: "blues" } },
+      tooltip: [
+        { field: "Genre", type: "nominal" },
+        { field: "Platform", type: "nominal" },
+        { field: "Total_Global_Sales", type: "quantitative", format: ".2f" }
+      ]
+    }
   };
-
-  // 2) Embed Vis 1 into the INNER wrapper so the scroll container remains intact
-  vegaEmbed("#vis1 .vis-inner", vis1Spec, {
-    actions: false,               // hides "Open in Vega Editor" etc. (optional)
-    renderer: "canvas"            // good default; keep if you already use it
-  }).then((res) => {
-    // ✅ ensures the view recalculates size correctly after render
-    res.view.resize();
-    res.view.run();
-  }).catch(console.error);
-
-  // -------------------------------
-  // VIS 2 / VIS 3 / VIS 4
-  // -------------------------------
-  // Leave your existing Vis 2–4 code exactly as it is.
-});
 
   /* ---------------- VIS 2 (FIXED: selection params live in ONE layer) ---------------- */
   const spec2 = {
