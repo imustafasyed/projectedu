@@ -20,9 +20,9 @@
   <!-- Page-specific styling: make wide charts truly 1200px and scrollable -->
   <style>
     .vis-card { border-radius: 18px; } /* Rounded cards */
-    .vis-box { min-height: 460px; width: 100%; } /* (Not used for charts now, but kept as-is) */
-    .vis-box-wide { min-height: 620px; width: 100%; overflow-x: auto; } /* All charts use this container */
-    .vis-inner { min-width: 1200px; } /* Vega charts have room to be 1200px wide */
+    .vis-box { min-height: 460px; width: 100%; } /* (kept, but not used if all are wide) */
+    .vis-box-wide { min-height: 620px; width: 100%; overflow-x: auto; } /* Wide scroll container */
+    .vis-inner { min-width: 1200px; } /* Gives Vega room to be 1200px wide */
   </style>
 </head>
 
@@ -32,7 +32,7 @@
 
   <div class="container-fluid overflow-hidden"> <!-- Template wrapper -->
 
-    <!-- Sidebar (consistent with your theme) -->
+    <!-- Sidebar (kept consistent with your theme) -->
     <header id="header-nav" class="col-lg-2 position-fixed px-5 bg-white h-100">
       <div class="header-wrap d-flex flex-column justify-content-between h-100">
 
@@ -68,7 +68,9 @@
     <!-- Main content -->
     <main class="col-lg-10 offset-lg-2">
 
-      <!-- Header + Vis 1 section -->
+      <!-- =========================
+           HEADER + VIS 1
+           ========================= -->
       <div class="container">
         <div class="justify-content-center px-1 mx-1 px-xl-5 mx-xl-5">
 
@@ -89,9 +91,9 @@
                   <div class="card-body p-4">
                     <h3 class="h4 mb-3">1) Global Sales by Genre and Platform</h3>
 
-                    <!-- IMPORTANT: JS embeds into #vis1 .vis-inner -->
+                    <!-- Matches JS embed target: #vis1 .vis-inner -->
                     <div id="vis1" class="vis-box-wide">
-                      <div class="vis-inner">Loading chart…</div> <!-- Required for vegaEmbed("#vis1 .vis-inner", ...) -->
+                      <div class="vis-inner">Loading chart…</div>
                     </div>
 
                   </div>
@@ -103,21 +105,25 @@
         </div>
       </div>
 
-      <!-- Vis 2–4 (wide section) -->
+      <!-- =========================
+           VIS 2–4 (NOW SAME WIDTH AS VIS 1)
+           FIX: container-fluid -> container
+           FIX: col-12 -> col-lg-10 + centered row
+           ========================= -->
       <section class="my-4 pb-5">
-        <div class="container-fluid px-4 px-xl-5">
-          <div class="row g-4">
+        <div class="container px-0 px-xl-0"> <!-- FIX: use container so cards are NOT full-width -->
+          <div class="row justify-content-center g-4"> <!-- FIX: center like Vis 1 -->
 
             <!-- Vis 2 -->
-            <div class="col-12">
+            <div class="col-lg-10"> <!-- FIX: same column width as Vis 1 -->
               <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="card-body p-4">
                   <h3 class="h4 mb-2">2) Sales Over Time by Platform and Genre</h3>
                   <p class="text-muted mb-3">Single-select: click ONE platform in the legend. Double-click to clear.</p>
 
-                  <!-- IMPORTANT: JS embeds into #vis2 .vis-inner -->
+                  <!-- Matches JS embed target: #vis2 .vis-inner -->
                   <div id="vis2" class="vis-box-wide">
-                    <div class="vis-inner">Loading chart…</div> <!-- Required for vegaEmbed("#vis2 .vis-inner", ...) -->
+                    <div class="vis-inner">Loading chart…</div>
                   </div>
 
                 </div>
@@ -125,15 +131,15 @@
             </div>
 
             <!-- Vis 3 -->
-            <div class="col-12">
+            <div class="col-lg-10"> <!-- FIX: same column width as Vis 1 -->
               <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="card-body p-4">
                   <h3 class="h4 mb-2">3) Regional Sales vs Platform</h3>
                   <p class="text-muted mb-3">Single-select: click ONE region in the legend. Double-click to clear.</p>
 
-                  <!-- IMPORTANT: JS embeds into #vis3 .vis-inner -->
+                  <!-- Matches JS embed target: #vis3 .vis-inner -->
                   <div id="vis3" class="vis-box-wide">
-                    <div class="vis-inner">Loading chart…</div> <!-- Required for vegaEmbed("#vis3 .vis-inner", ...) -->
+                    <div class="vis-inner">Loading chart…</div>
                   </div>
 
                 </div>
@@ -141,15 +147,15 @@
             </div>
 
             <!-- Vis 4 -->
-            <div class="col-12">
+            <div class="col-lg-10"> <!-- FIX: same column width as Vis 1 -->
               <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="card-body p-4">
                   <h3 class="h4 mb-2">4) Visual Story — Japan Share vs Global Sales</h3>
                   <p class="text-muted mb-3">Brush-select points, and use zoom/pan to explore.</p>
 
-                  <!-- IMPORTANT: JS embeds into #vis4 .vis-inner -->
+                  <!-- Matches JS embed target: #vis4 .vis-inner -->
                   <div id="vis4" class="vis-box-wide">
-                    <div class="vis-inner">Loading chart…</div> <!-- Required for vegaEmbed("#vis4 .vis-inner", ...) -->
+                    <div class="vis-inner">Loading chart…</div>
                   </div>
 
                 </div>
