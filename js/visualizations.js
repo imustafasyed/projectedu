@@ -2,143 +2,122 @@
 /* VIDEO GAME SALES VISUALIZATIONS                                            */
 /* Interactive charts using Vega-Lite library                                 */
 /* Created by: Mustafa                                                        */
-/* Each visualization is fully commented for easy understanding               */
+/* Each line is commented to explain what it does                             */
 /* ========================================================================== */
 
 // ==========================
-// CONFIGURATION VARIABLES
+// CONFIGURATION
 // ==========================
 
-// Path to your CSV data file (make sure this matches your actual file location)
+// This is where your CSV data file is located
 const dataUrl = "data/videogames_wide.csv";
 
-// Settings for how Vega-Lite embeds the charts into the page
+// These are settings for how the charts appear on the page
 const embedOptions = {
-  actions: false, // Hide the "..." menu button (keeps interface clean)
-  renderer: "svg" // Use SVG rendering (crisp, scalable graphics)
+  actions: false, // Don't show the download/edit buttons (keeps it clean)
+  renderer: "svg" // Use SVG for crisp, clear graphics
 };
 
 // ==========================
-// ERROR HANDLING FUNCTION
+// ERROR HANDLING
 // ==========================
 
-// This function displays user-friendly error messages if a chart fails to load
+// This function shows an error message if a chart doesn't load
 function showError(targetId, err) {
-  const el = document.querySelector(targetId); // Find the container where chart should appear
-  if (el) { // If container exists
-    el.innerHTML = `
-      <div style="color:#b00020; font-weight:700; font-size:1.1rem; margin-bottom:1rem;">
-        ⚠️ Chart Failed to Load
-      </div>
-      <div style="background:#fff3cd; padding:1rem; border-radius:8px; border:1px solid #ffc107;">
-        <strong>Possible reasons:</strong><br>
-        • Data file not found (check if videogames_wide.csv exists in data/ folder)<br>
-        • Network connection issue<br>
-        • Browser compatibility problem<br><br>
-        <strong>Technical details:</strong><br>
-        <code style="display:block; white-space:pre-wrap; font-size:0.85rem; color:#856404;">${String(err)}</code>
-      </div>
-    `; // Display helpful error message
+  const el = document.querySelector(targetId); // Find where the chart should be
+  if (el) { // If we found it
+    el.innerHTML = `<div style="color:#b00020; padding:2rem; text-align:center;">
+      <strong>Chart failed to load</strong><br>
+      <small>Check console for details</small>
+    </div>`; // Show error message
   }
-  console.error("Visualization Error:", err); // Also log to browser console for debugging
+  console.error("Chart Error:", err); // Print error details in browser console
 }
 
 // ==========================
-// MAIN RENDERING FUNCTION
+// WAIT FOR PAGE TO LOAD
 // ==========================
 
-// Wait for page and all libraries to fully load before creating charts
+// Don't start creating charts until everything is loaded
 window.addEventListener("load", async () => {
 
-  // Remove loading indicators from all chart containers
-  document.querySelectorAll('.vis-loading').forEach(el => el.remove());
-
   /* ========================================================================== */
-  /* VISUALIZATION 1: HEATMAP - Global Sales by Genre and Platform              */
-  /* ========================================================================== */
-  /* Research Questions:                                                        */
-  /* 1. Which genre-platform combinations generate the highest global sales?   */
-  /* 2. Are certain platforms dominated by specific genres?                    */
+  /* VISUALIZATION 1: HEATMAP                                                   */
+  /* Shows which Genre + Platform combinations sell the most games             */
   /* ========================================================================== */
 
   const spec1 = {
-    // Specify which version of Vega-Lite we're using
+    // Tell Vega-Lite which version we're using
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     
-    // Load the data from CSV file
+    // Load data from CSV file
     data: { url: dataUrl },
     
-    // Make chart width match container (responsive design)
+    // Make width match the container it's in (responsive)
     width: "container",
     
-    // Set fixed height for consistent appearance
+    // Set a fixed height
     height: 420,
     
-    // Auto-sizing behavior - fit within container with padding
+    // Make sure it fits nicely in the space
     autosize: { type: "fit", contains: "padding" },
     
-    // Data transformation pipeline
+    // TRANSFORM: Process the data before visualizing
     transform: [
       {
-        // Combine all games by Genre + Platform, summing their Global Sales
+        // Add up (aggregate) all the Global_Sales values
         aggregate: [
-          { op: "sum", field: "Global_Sales", as: "Total_Global_Sales" } // Add up all sales
+          { op: "sum", field: "Global_Sales", as: "Total_Global_Sales" } // Sum sales for each combination
         ],
-        groupby: ["Genre", "Platform"] // Create one row per Genre-Platform pair
+        // Group by Genre and Platform (so we get totals for each combo)
+        groupby: ["Genre", "Platform"]
       }
     ],
     
-    // Use rectangles to create heatmap cells
+    // Use rectangles to make a heatmap
     mark: "rect",
     
-    // Visual encoding - how data maps to visual properties
+    // ENCODING: Map data to visual properties
     encoding: {
-      // X-axis: Platform names
+      // X-AXIS: Show platforms across the bottom
       x: { 
-        field: "Platform", // Use Platform column
-        type: "nominal", // Categorical data (not numbers)
-        title: "Platform", // Axis label
-        axis: { labelAngle: -40 } // Rotate labels to prevent overlap
+        field: "Platform", // Use Platform column from data
+        type: "nominal", // It's a category (not a number)
+        title: "Platform", // Label on the axis
+        axis: { labelAngle: -40 } // Tilt labels so they don't overlap
       },
       
-      // Y-axis: Genre names
+      // Y-AXIS: Show genres up the side
       y: { 
-        field: "Genre", // Use Genre column
-        type: "nominal", // Categorical data
-        title: "Genre" // Axis label
+        field: "Genre", // Use Genre column from data
+        type: "nominal", // It's a category
+        title: "Genre" // Label on the axis
       },
       
-      // Color intensity: Total sales amount
+      // COLOR: Darker blue = higher sales
       color: { 
-        field: "Total_Global_Sales", // Use our calculated total
-        type: "quantitative", // Numeric data
+        field: "Total_Global_Sales", // Use the total we calculated
+        type: "quantitative", // It's a number
         title: "Total Global Sales (millions)", // Legend title
         scale: { 
-          scheme: "blues", // Color palette (light to dark blue)
-          domainMin: 0 // Start color scale at 0
+          scheme: "blues", // Color scheme from light to dark blue
+          domainMin: 0 // Start at 0
         }
       },
       
-      // Hover tooltip: Show details on mouse-over
+      // TOOLTIP: What shows when you hover
       tooltip: [
-        { field: "Genre", type: "nominal", title: "Genre" }, // Show genre name
-        { field: "Platform", type: "nominal", title: "Platform" }, // Show platform name
-        { 
-          field: "Total_Global_Sales", 
-          type: "quantitative", 
-          title: "Total Sales (millions)",
-          format: ".2f" // Show 2 decimal places (e.g., 123.45)
-        }
+        { field: "Genre", type: "nominal", title: "Genre" },
+        { field: "Platform", type: "nominal", title: "Platform" },
+        { field: "Total_Global_Sales", type: "quantitative", title: "Sales (millions)", format: ".2f" }
       ]
     }
   };
 
   /* ========================================================================== */
-  /* VISUALIZATION 2: LINE CHART - Sales Over Time by Platform                 */
-  /* ========================================================================== */
-  /* Research Questions:                                                        */
-  /* 1. How have video game sales evolved across platforms over the years?     */
-  /* 2. Which platforms experienced dramatic rise or decline in sales?         */
+  /* VISUALIZATION 2: LINE CHART                                                */
+  /* Shows how sales changed over time for different platforms                 */
+  /* Has dropdown to filter by genre + click legend to highlight               */
   /* ========================================================================== */
 
   const spec2 = {
@@ -148,87 +127,81 @@ window.addEventListener("load", async () => {
     height: 450,
     autosize: { type: "fit", contains: "padding" },
     
-    // Top-level interactive parameters
+    // PARAMETERS: Interactive controls
     params: [
       {
-        // Dropdown menu to filter by genre
-        name: "pickGenre", // Variable name for selected genre
-        value: "Action", // Default selection when page loads
+        // Dropdown menu to pick which genre to show
+        name: "pickGenre",
+        value: "Action", // Start with Action selected
         bind: {
-          input: "select", // Create dropdown menu
-          options: [
-            "Action", "Sports", "Shooter", "Role-Playing", "Platform", 
-            "Racing", "Misc", "Fighting", "Simulation", "Puzzle", 
-            "Adventure", "Strategy"
-          ], // Available genre options
+          input: "select", // Make a dropdown
+          options: ["Action", "Sports", "Shooter", "Role-Playing", "Platform", "Racing", 
+                    "Misc", "Fighting", "Simulation", "Puzzle", "Adventure", "Strategy"],
           name: "Select Genre: " // Label for dropdown
         }
       }
     ],
     
-    // Clean and prepare the data
+    // TRANSFORM: Clean and prepare the data
     transform: [
-      // Remove rows with missing or invalid year data
+      // Remove rows where Year is missing
       { filter: "datum.Year != null && datum.Year != 'N/A'" },
       
-      // Convert year from text to number for proper sorting
+      // Convert Year from text to a number
       { calculate: "toNumber(datum.Year)", as: "YearNum" },
       
-      // Keep only games matching the selected genre
+      // Only keep rows matching the selected genre
       { filter: "datum.Genre === pickGenre" },
       
-      // Sum sales by year and platform
+      // Sum up sales for each Year + Platform combination
       {
-        aggregate: [
-          { op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }
-        ],
-        groupby: ["YearNum", "Platform"] // One row per Year-Platform combination
+        aggregate: [{ op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }],
+        groupby: ["YearNum", "Platform"]
       }
     ],
     
-    // Use multiple layers for complex interactivity
+    // LAYER: Use multiple layers for complex interactions
     layer: [
-      // LAYER 1: Line chart with selection controls
+      // LAYER 1: The actual lines
       {
-        // Interactive selections (defined here to avoid duplicate signals)
+        // Interactive selections (put here to avoid conflicts)
         params: [
           {
-            // Click legend to select/highlight one platform
+            // Click legend to highlight one platform
             name: "platformPick",
             select: { 
-              type: "point", // Click-based selection
-              fields: ["Platform"], // Select based on platform
-              toggle: false // Clicking different platform replaces selection (no multi-select)
+              type: "point", // Select by clicking
+              fields: ["Platform"], // Select platforms
+              toggle: false // Clicking new platform replaces old selection
             },
-            bind: "legend", // Clicking legend item triggers selection
-            clear: "dblclick" // Double-click anywhere to clear selection
+            bind: "legend", // Clicking legend triggers this
+            clear: "dblclick" // Double-click to clear selection
           },
           {
-            // Hover to show tooltip
+            // Hover over lines to see values
             name: "hoverPoint",
             select: { 
-              type: "point", // Point-based selection
+              type: "point",
               fields: ["Platform"],
-              nearest: true, // Select nearest point to mouse
-              on: "mouseover", // Trigger on hover
-              clear: "mouseout" // Clear when mouse leaves
+              nearest: true, // Select closest point
+              on: "mouseover", // Activate on hover
+              clear: "mouseout" // Deactivate when mouse leaves
             }
           },
           {
             // Drag to zoom, scroll to pan
             name: "zoomPan",
             select: { 
-              type: "interval", // Rectangular selection
-              bind: "scales" // Bind to axis scales for zoom/pan
+              type: "interval", // Select a rectangular area
+              bind: "scales" // Zoom/pan the axes
             }
           }
         ],
         
-        // Draw lines connecting data points
+        // Draw lines
         mark: { 
           type: "line", 
-          strokeWidth: 2.5, // Line thickness
-          point: false // Don't show dots at every point (too cluttered)
+          strokeWidth: 2.5 // Line thickness
         },
         
         encoding: {
@@ -236,10 +209,7 @@ window.addEventListener("load", async () => {
             field: "YearNum", 
             type: "quantitative", 
             title: "Year",
-            axis: { 
-              format: "d", // Display as integer (no decimals)
-              tickCount: 10 // Show approximately 10 year labels
-            }
+            axis: { format: "d", tickCount: 10 } // Show as whole numbers
           },
           y: { 
             field: "Total_Global_Sales", 
@@ -250,45 +220,35 @@ window.addEventListener("load", async () => {
             field: "Platform", 
             type: "nominal", 
             title: "Platform",
-            scale: { scheme: "category20" } // Use colorful palette with 20 colors
+            scale: { scheme: "category20" } // Colorful palette
           },
-          // Conditional opacity: selected platform at full opacity, others faded
+          // Make unselected platforms very faded
           opacity: { 
-            condition: { param: "platformPick", value: 1 }, // Selected = 100% opacity
-            value: 0.12 // Unselected = 12% opacity (very faded)
+            condition: { param: "platformPick", value: 1 }, // Selected = solid
+            value: 0.12 // Unselected = very faded
           }
         }
       },
       
-      // LAYER 2: Points that appear on hover for tooltips
+      // LAYER 2: Dots that appear when hovering (for tooltips)
       {
-        mark: { 
-          type: "point", 
-          filled: true, // Solid circles
-          size: 100 // Medium-sized points
-        },
-        
+        mark: { type: "point", filled: true, size: 100 },
         encoding: {
-          x: { field: "YearNum", type: "quantitative" }, // Same X as lines
-          y: { field: "Total_Global_Sales", type: "quantitative" }, // Same Y as lines
-          color: { field: "Platform", type: "nominal" }, // Same colors as lines
+          x: { field: "YearNum", type: "quantitative" },
+          y: { field: "Total_Global_Sales", type: "quantitative" },
+          color: { field: "Platform", type: "nominal" },
           
-          // Only show points when hovering
+          // Only visible when hovering
           opacity: { 
             condition: { param: "hoverPoint", value: 1 }, // Show on hover
             value: 0 // Otherwise invisible
           },
           
-          // Tooltip with detailed information
+          // Tooltip with details
           tooltip: [
             { field: "Platform", type: "nominal", title: "Platform" },
             { field: "YearNum", type: "quantitative", title: "Year" },
-            { 
-              field: "Total_Global_Sales", 
-              type: "quantitative", 
-              title: "Sales (millions)",
-              format: ".2f" // Two decimal places
-            }
+            { field: "Total_Global_Sales", type: "quantitative", title: "Sales (millions)", format: ".2f" }
           ]
         }
       }
@@ -296,143 +256,120 @@ window.addEventListener("load", async () => {
   };
 
   /* ========================================================================== */
-  /* VISUALIZATION 3: STACKED BAR CHART - Regional Sales by Platform           */
-  /* ========================================================================== */
-  /* Research Questions:                                                        */
-  /* 1. Do platforms show different popularity across regions?                 */
-  /* 2. Which regions contribute most to each platform's total sales?          */
+  /* VISUALIZATION 3: STACKED BAR CHART                                         */
+  /* Shows regional breakdown of sales for each platform                       */
   /* ========================================================================== */
 
   const spec3 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
     width: "container",
-    height: 580, // Taller to accommodate many platforms
+    height: 580, // Taller to fit all platforms
     autosize: { type: "fit", contains: "padding" },
     
-    // Interactive parameters
+    // PARAMETERS: Interactive controls
     params: [
       {
-        // Click legend to select/highlight one region
+        // Click legend to highlight one region
         name: "regionPick",
         select: { 
           type: "point", 
           fields: ["Region"], 
-          toggle: false // Single selection only
+          toggle: false // Single selection
         },
-        bind: "legend", // Bind to legend clicks
-        clear: "dblclick" // Double-click to clear
+        bind: "legend",
+        clear: "dblclick"
       },
       {
-        // Hover to highlight individual bar segments
+        // Hover over bar segments
         name: "hoverSeg",
         select: { 
           type: "point", 
-          fields: ["Platform", "Region"], // Select by both dimensions
+          fields: ["Platform", "Region"],
           on: "mouseover", 
           clear: "mouseout" 
         }
       }
     ],
     
-    // Data transformation: convert wide format to long format
+    // TRANSFORM: Reshape data from wide to long format
     transform: [
       {
-        // Take regional sales columns and stack them into rows
-        fold: [
-          "NA_Sales",    // North America
-          "EU_Sales",    // Europe
-          "JP_Sales",    // Japan
-          "Other_Sales"  // Rest of world
-        ],
-        as: ["Region", "Sales"] // Create new columns: Region (name) and Sales (value)
+        // Convert regional columns into rows
+        fold: ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"],
+        as: ["Region", "Sales"] // New columns
       },
       {
-        // Sum up sales for each Platform-Region combination
-        aggregate: [
-          { op: "sum", field: "Sales", as: "Total_Sales" }
-        ],
+        // Sum sales for each Platform + Region
+        aggregate: [{ op: "sum", field: "Sales", as: "Total_Sales" }],
         groupby: ["Platform", "Region"]
       }
     ],
     
-    // Use bars for chart
+    // Use bars
     mark: "bar",
     
     encoding: {
-      // Y-axis: Platform names (horizontal bars)
+      // Y-AXIS: Platform names (horizontal bars)
       y: { 
         field: "Platform", 
         type: "nominal", 
         title: "Platform",
-        sort: "-x", // Sort platforms by total sales (descending)
-        axis: { labelLimit: 100 } // Allow longer labels without truncation
+        sort: "-x", // Sort by total sales
+        axis: { labelLimit: 100 }
       },
       
-      // X-axis: Sales amounts (bars extend horizontally)
+      // X-AXIS: Sales amounts
       x: { 
         field: "Total_Sales", 
         type: "quantitative", 
         title: "Total Sales (millions)",
-        stack: true // Stack regions within each platform
+        stack: true // Stack regions on top of each other
       },
       
-      // Color: Different color for each region
+      // COLOR: Different color for each region
       color: { 
         field: "Region", 
         type: "nominal", 
         title: "Region",
         scale: { 
-          domain: ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"], // Order regions
-          range: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"] // Custom colors for each region
+          domain: ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"],
+          range: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"] // Blue, Orange, Green, Red
         },
         legend: { 
-          title: "Region",
-          labelExpr: "replace(datum.label, '_Sales', '')" // Remove "_Sales" from labels (show "NA" not "NA_Sales")
+          labelExpr: "replace(datum.label, '_Sales', '')" // Remove "_Sales" from labels
         }
       },
       
-      // Conditional opacity based on selection
+      // Fade unselected regions
       opacity: { 
-        condition: { param: "regionPick", value: 1 }, // Selected region = full opacity
-        value: 0.25 // Other regions = 25% opacity (faded)
+        condition: { param: "regionPick", value: 1 },
+        value: 0.25
       },
       
-      // Outline on hover for emphasis
+      // Add border on hover
       stroke: { 
-        condition: { param: "hoverSeg", value: "#000" }, // Black outline on hover
-        value: null // No outline otherwise
+        condition: { param: "hoverSeg", value: "#000" },
+        value: null
       },
       strokeWidth: { 
-        condition: { param: "hoverSeg", value: 2 }, // Thick outline on hover
-        value: 0 // No outline otherwise
+        condition: { param: "hoverSeg", value: 2 },
+        value: 0
       },
       
-      // Tooltip with detailed information
+      // Tooltip
       tooltip: [
         { field: "Platform", type: "nominal", title: "Platform" },
-        { 
-          field: "Region", 
-          type: "nominal", 
-          title: "Region",
-          format: "replace(datum.value, '_Sales', '')" // Clean region name
-        },
-        { 
-          field: "Total_Sales", 
-          type: "quantitative", 
-          title: "Sales (millions)",
-          format: ".2f" 
-        }
+        { field: "Region", type: "nominal", title: "Region" },
+        { field: "Total_Sales", type: "quantitative", title: "Sales (millions)", format: ".2f" }
       ]
     }
   };
 
   /* ========================================================================== */
-  /* VISUALIZATION 4: SCATTER PLOT - Japan Share vs Global Sales               */
-  /* ========================================================================== */
-  /* Research Questions:                                                        */
-  /* 1. Which games have high sales in Japan compared to global performance?   */
-  /* 2. What genres/publishers create "Japan-centric" games?                   */
+  /* VISUALIZATION 4: SCATTER PLOT                                              */
+  /* Shows Japan's share of sales vs global sales                              */
+  /* Reveals which games are popular specifically in Japan                     */
   /* ========================================================================== */
 
   const spec4 = {
@@ -442,188 +379,157 @@ window.addEventListener("load", async () => {
     height: 480,
     autosize: { type: "fit", contains: "padding" },
     
-    // Interactive parameters
+    // PARAMETERS: Interactive controls
     params: [
       {
-        // Drag to select rectangular area of points
+        // Drag to select area of points
         name: "brush",
-        select: { type: "interval" } // Rectangular selection
+        select: { type: "interval" }
       },
       {
-        // Scroll/pinch to zoom, drag to pan
+        // Zoom and pan
         name: "zoomPan",
         select: { 
           type: "interval", 
-          bind: "scales" // Zoom/pan affects axis scales
+          bind: "scales" 
         }
       }
     ],
     
-    // Calculate Japan's share of global sales
+    // TRANSFORM: Calculate Japan's share
     transform: [
       {
-        // Calculate: Japan Sales divided by Global Sales
+        // Calculate: Japan Sales ÷ Global Sales = Share
         calculate: "datum.Global_Sales > 0 ? datum.JP_Sales / datum.Global_Sales : null",
-        as: "JP_Share" // Create new field called JP_Share
+        as: "JP_Share"
       },
       {
-        // Remove rows where calculation failed (invalid or null)
+        // Remove invalid calculations
         filter: "isValid(datum.JP_Share)"
       },
       {
-        // Filter out very small games (reduce noise/clutter)
-        filter: "datum.Global_Sales >= 0.5" // Keep only games with 0.5M+ sales
+        // Only show games with at least 0.5 million sales (reduce clutter)
+        filter: "datum.Global_Sales >= 0.5"
       }
     ],
     
     // Use circles for scatter plot
     mark: { 
       type: "circle", 
-      opacity: 0.7, // Semi-transparent (see overlapping points)
-      size: 80 // Medium-sized circles
+      opacity: 0.7, 
+      size: 80 
     },
     
     encoding: {
-      // X-axis: Total global sales (logarithmic scale to see patterns better)
+      // X-AXIS: Total global sales (log scale to see patterns better)
       x: { 
         field: "Global_Sales", 
         type: "quantitative", 
         title: "Global Sales (millions)",
         scale: { 
-          type: "log", // Logarithmic scale (compresses large values)
-          domain: [0.5, 100] // Set reasonable range
+          type: "log", // Logarithmic scale
+          domain: [0.5, 100]
         }
       },
       
-      // Y-axis: Japan's share of global sales (0 to 1 = 0% to 100%)
+      // Y-AXIS: Japan's percentage of global sales
       y: { 
         field: "JP_Share", 
         type: "quantitative", 
-        title: "Japan Sales Share (JP / Global)",
-        scale: { 
-          domain: [0, 1] // Range from 0 (0%) to 1 (100%)
-        },
-        axis: {
-          format: ".0%" // Display as percentage (e.g., "50%" instead of "0.5")
-        }
+        title: "Japan Sales Share",
+        scale: { domain: [0, 1] }, // 0 to 1 = 0% to 100%
+        axis: { format: ".0%" } // Show as percentage
       },
       
-      // Color: Different color for each genre
+      // COLOR: Different color per genre
       color: { 
         field: "Genre", 
         type: "nominal", 
         title: "Genre",
-        scale: { scheme: "tableau20" } // Use Tableau's 20-color palette
+        scale: { scheme: "tableau20" }
       },
       
-      // Conditional opacity: highlighted by brush selection
+      // Fade points not in brushed area
       opacity: { 
-        condition: { param: "brush", value: 0.9 }, // Selected points = 90% opacity
-        value: 0.15 // Unselected points = 15% opacity (very faded)
+        condition: { param: "brush", value: 0.9 },
+        value: 0.15
       },
       
-      // Detailed tooltip on hover
+      // Detailed tooltip
       tooltip: [
         { field: "Name", type: "nominal", title: "Game Title" },
         { field: "Platform", type: "nominal", title: "Platform" },
         { field: "Genre", type: "nominal", title: "Genre" },
         { field: "Publisher", type: "nominal", title: "Publisher" },
         { field: "Year", type: "ordinal", title: "Year" },
-        { 
-          field: "Global_Sales", 
-          type: "quantitative", 
-          title: "Global Sales (millions)",
-          format: ".2f" 
-        },
-        { 
-          field: "JP_Sales", 
-          type: "quantitative", 
-          title: "Japan Sales (millions)",
-          format: ".2f" 
-        },
-        { 
-          field: "JP_Share", 
-          type: "quantitative", 
-          title: "Japan Share",
-          format: ".1%" // Show as percentage with 1 decimal (e.g., "23.4%")
-        }
+        { field: "Global_Sales", type: "quantitative", title: "Global Sales (millions)", format: ".2f" },
+        { field: "JP_Sales", type: "quantitative", title: "Japan Sales (millions)", format: ".2f" },
+        { field: "JP_Share", type: "quantitative", title: "Japan Share", format: ".1%" }
       ]
     }
   };
 
   /* ========================================================================== */
-  /* RENDER ALL VISUALIZATIONS                                                 */
-  /* ========================================================================== */
-  /* Each chart is rendered independently with error handling                  */
+  /* RENDER ALL CHARTS                                                          */
+  /* Try to create each chart, show error if it fails                          */
   /* ========================================================================== */
 
-  // Render Visualization 1 (Heatmap)
+  // Chart 1: Heatmap
   try {
-    await vegaEmbed("#vis1", spec1, embedOptions); // Embed chart into #vis1 container
-    console.log("✅ Visualization 1 loaded successfully"); // Log success
+    await vegaEmbed("#vis1", spec1, embedOptions);
+    console.log("✓ Chart 1 loaded");
   } catch (error) {
-    showError("#vis1", error); // Show error message if chart fails
+    showError("#vis1", error);
   }
 
-  // Render Visualization 2 (Line Chart)
+  // Chart 2: Line Chart
   try {
     await vegaEmbed("#vis2", spec2, embedOptions);
-    console.log("✅ Visualization 2 loaded successfully");
+    console.log("✓ Chart 2 loaded");
   } catch (error) {
     showError("#vis2", error);
   }
 
-  // Render Visualization 3 (Stacked Bar Chart)
+  // Chart 3: Stacked Bars
   try {
     await vegaEmbed("#vis3", spec3, embedOptions);
-    console.log("✅ Visualization 3 loaded successfully");
+    console.log("✓ Chart 3 loaded");
   } catch (error) {
     showError("#vis3", error);
   }
 
-  // Render Visualization 4 (Scatter Plot)
+  // Chart 4: Scatter Plot
   try {
     await vegaEmbed("#vis4", spec4, embedOptions);
-    console.log("✅ Visualization 4 loaded successfully");
+    console.log("✓ Chart 4 loaded");
   } catch (error) {
     showError("#vis4", error);
   }
 
-  // Log completion message
-  console.log("🎉 All visualizations have been processed!");
+  console.log("All visualizations complete!");
 
-}); // End of window load event listener
+}); // End of page load
 
 /* ========================================================================== */
-/* END OF VISUALIZATION CODE                                                  */
+/* HOW TO USE THE INTERACTIVE FEATURES:                                       */
+/*                                                                            */
+/* Chart 1 (Heatmap):                                                         */
+/* - Hover over any cell to see exact numbers                                */
+/*                                                                            */
+/* Chart 2 (Line Chart):                                                      */
+/* - Use dropdown to change genre                                             */
+/* - Click a platform in the legend to highlight it                          */
+/* - Double-click anywhere to reset                                           */
+/* - Hover over lines to see details                                          */
+/* - Drag to zoom into a time period                                          */
+/*                                                                            */
+/* Chart 3 (Stacked Bars):                                                    */
+/* - Click a region in the legend to highlight it                            */
+/* - Double-click to reset                                                    */
+/* - Hover over bar segments for details                                      */
+/*                                                                            */
+/* Chart 4 (Scatter Plot):                                                    */
+/* - Drag to select a rectangular area                                        */
+/* - Scroll/pinch to zoom                                                     */
+/* - Hover over points for game details                                       */
 /* ========================================================================== */
-
-/*
-SUMMARY OF INTERACTIVE FEATURES:
-
-Visualization 1 (Heatmap):
-- Hover over cells to see exact sales numbers
-- Color intensity shows sales volume
-
-Visualization 2 (Line Chart):
-- Dropdown to filter by genre
-- Click legend to highlight specific platform
-- Double-click to reset selection
-- Hover over lines to see exact values
-- Drag to zoom into time periods
-- Scroll to pan left/right
-
-Visualization 3 (Stacked Bars):
-- Click legend to highlight specific region
-- Double-click to reset selection
-- Hover over bar segments for details
-
-Visualization 4 (Scatter Plot):
-- Drag to select rectangular area of points
-- Scroll/pinch to zoom in/out
-- Drag to pan around
-- Hover over points for game details
-- Colors show different genres
-
-All charts are responsive and will adjust to container width!
-*/
