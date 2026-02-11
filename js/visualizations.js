@@ -22,49 +22,32 @@ window.addEventListener("load", async () => { // Run after page is fully loaded 
 
 
 
-
-
-
-  /* visualizations.js
-   Update: Vis 1 embeds into #vis1 .vis-inner and matches Vis 2–4 wide size (1200px) */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  /* ---------------------------
-   VIS 1 — SIMPLE STACKED BAR
-   Total Sales by Genre (stacked by Region)
-   - Easy to understand
-   - Clickable legend (region)
-   - Clear axis labels
+/* ---------------------------
+   VIS 1 — SIMPLE BAR CHART
+   Total Global Sales by Genre (easy + clean)
+   Click a bar to highlight, click again to clear
    --------------------------- */
 const spec1 = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   data: { url: dataUrl },
 
-  // Make data "long" so we can stack regions easily
   transform: [
+    // Sum global sales per genre
     {
-      fold: ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"],
-      as: ["Region", "Sales"]
-    },
-    // Total sales per Genre per Region
-    {
-      aggregate: [{ op: "sum", field: "Sales", as: "Total_Sales" }],
-      groupby: ["Genre", "Region"]
+      aggregate: [{ op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }],
+      groupby: ["Genre"]
     }
   ],
 
-  width: 1100,
+  width: 1200,
   height: 520,
   autosize: { type: "none" },
 
-  // Clickable legend: click ONE region to highlight; dblclick clears
+  // Click-to-highlight (simple + intuitive)
   params: [
     {
-      name: "regionPick",
-      select: { type: "point", fields: ["Region"], toggle: false },
-      bind: "legend",
-      clear: "dblclick"
+      name: "genrePick",
+      select: { type: "point", fields: ["Genre"], toggle: true } // toggle lets user click again to clear
     }
   ],
 
@@ -74,35 +57,25 @@ const spec1 = {
     x: {
       field: "Genre",
       type: "nominal",
-      title: "Genre",          // ✅ X-axis label
+      title: "Genre",
       sort: "-y",
       axis: { labelAngle: 0 }
     },
-
     y: {
-      field: "Total_Sales",
+      field: "Total_Global_Sales",
       type: "quantitative",
-      title: "Total Sales (Millions)",  // ✅ Y-axis label
-      stack: "zero"
+      title: "Total Global Sales (Millions)"
     },
 
+    // Keep it readable: one color + highlight on click
     color: {
-      field: "Region",
-      type: "nominal",
-      title: "Region",         // ✅ Legend title
-      scale: { scheme: "tableau10" }
-    },
-
-    // Highlight selected region (legend click)
-    opacity: {
-      condition: { param: "regionPick", value: 1 },
-      value: 0.25
+      condition: { param: "genrePick", value: "#2563eb" }, // highlighted bars
+      value: "#cbd5e1"                                     // default bars
     },
 
     tooltip: [
       { field: "Genre", type: "nominal", title: "Genre" },
-      { field: "Region", type: "nominal", title: "Region" },
-      { field: "Total_Sales", type: "quantitative", title: "Sales", format: ".2f" }
+      { field: "Total_Global_Sales", type: "quantitative", title: "Global Sales", format: ".2f" }
     ]
   }
 };
