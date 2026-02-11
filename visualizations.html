@@ -1,327 +1,206 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <!-- ============================ -->
-  <!-- PAGE SETTINGS & META INFO    -->
-  <!-- ============================ -->
-  <title>Video Game Sales - Interactive Visualizations</title> <!-- Browser tab title -->
-  <meta charset="utf-8"> <!-- Support all characters (emojis, symbols, etc.) -->
-  <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- Works in older browsers -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Mobile-friendly responsive design -->
+  <title>Data Visualizations - MS Creative Lab</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  
+  <!-- Stylesheets matching Julia theme -->
+  <link rel="stylesheet" type="text/css" href="css/vendor.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="style.css">
 
-  <!-- ============================ -->
-  <!-- EXTERNAL CSS STYLESHEETS     -->
-  <!-- ============================ -->
-  <link rel="stylesheet" type="text/css" href="css/vendor.css"> <!-- Template's base styles -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap framework for layout -->
-  <link rel="stylesheet" type="text/css" href="style.css"> <!-- Your custom theme styles -->
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap" rel="stylesheet">
 
-  <!-- ============================ -->
-  <!-- CUSTOM PAGE STYLES           -->
-  <!-- ============================ -->
+  <!-- Vega Visualization Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
   <style>
-    /* Make visualization cards look professional and clean */
-    .vis-card { 
-      border-radius: 16px; /* Smooth rounded corners */
-      transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover animation */
-      border: none; /* Remove default card border */
-      overflow: hidden; /* Keep content inside rounded corners */
+    /* Visualization card styling consistent with Julia theme */
+    .vis-card {
+      background: var(--bs-white);
+      border: 1px solid var(--bs-gray-300);
+      transition: all 0.3s var(--custom-easing);
     }
-    
-    /* Add hover effect to cards */
+
     .vis-card:hover {
-      transform: translateY(-4px); /* Lift card slightly on hover */
-      box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important; /* Stronger shadow on hover */
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
-    
-    /* Container for each chart with consistent sizing */
-    .vis-box { 
-      min-height: 450px; /* Reserve vertical space for charts */
-      padding: 1rem; /* Add spacing around chart */
-      position: relative; /* For positioning loading state */
+
+    /* Chart container */
+    .vis-box {
+      min-height: 450px;
+      position: relative;
     }
-    
-    /* Loading indicator styling */
-    .vis-loading {
-      position: absolute; /* Position over the chart area */
-      top: 50%; /* Center vertically */
-      left: 50%; /* Center horizontally */
-      transform: translate(-50%, -50%); /* Perfect centering */
-      color: #6c757d; /* Muted gray color */
-      font-size: 0.9rem; /* Slightly smaller text */
+
+    /* Question styling */
+    .question-text {
+      color: var(--bs-gray-dark);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      padding: 0.75rem 0;
+      border-left: 3px solid var(--bs-primary);
+      padding-left: 1rem;
+      margin-bottom: 1.5rem;
     }
-    
-    /* Question prompts styling */
-    .question-prompt {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); /* Subtle gradient background */
-      border-left: 4px solid #FF534A; /* Accent colored left border */
-      padding: 1rem 1.25rem; /* Comfortable padding */
-      margin-bottom: 1rem; /* Space below prompt */
-      border-radius: 8px; /* Rounded corners */
-      font-size: 0.95rem; /* Slightly larger than default */
-      color: #495057; /* Dark gray text */
+
+    /* Section headers with fade animation */
+    .section-title {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s forwards;
     }
-    
-    /* Insight box styling */
-    .insight-box {
-      background: #fff3cd; /* Light yellow background */
-      border: 1px solid #ffc107; /* Yellow border */
-      border-radius: 8px; /* Rounded corners */
-      padding: 1rem; /* Inner spacing */
-      margin-top: 1rem; /* Space above */
-      font-size: 0.9rem; /* Comfortable reading size */
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    
-    /* Page header styling */
-    .page-header {
-      background: linear-gradient(135deg, #FF534A 0%, #d33a32 100%); /* Red gradient matching theme */
-      color: white; /* White text on colored background */
-      padding: 3rem 0; /* Vertical padding */
-      margin-bottom: 2rem; /* Space below header */
-      border-radius: 16px; /* Match card rounding */
-    }
+
+    /* Stagger animation delays */
+    .vis-card:nth-child(1) { animation-delay: 0.1s; }
+    .vis-card:nth-child(2) { animation-delay: 0.2s; }
+    .vis-card:nth-child(3) { animation-delay: 0.3s; }
+    .vis-card:nth-child(4) { animation-delay: 0.4s; }
   </style>
 </head>
 
-<body class="bg-body homepage post-template">
+<body class="bg-body homepage post-template" data-bs-spy="scroll" data-bs-target="#header-nav" tabindex="0">
 
-  <!-- ============================ -->
-  <!-- LAYOUT CONTAINER             -->
-  <!-- ============================ -->
-  <div class="container-fluid">
+  <!-- Mobile menu button -->
+  <a class="menu-btn"><span></span></a>
 
-    <!-- ============================ -->
-    <!-- LEFT SIDEBAR NAVIGATION      -->
-    <!-- ============================ -->
+  <div class="container-fluid overflow-hidden">
+
+    <!-- Sidebar Navigation (matching Julia theme) -->
     <header id="header-nav" class="col-lg-2 position-fixed px-5 bg-white h-100">
       <div class="header-wrap d-flex flex-column justify-content-between h-100">
-
-        <!-- Navigation Menu Section -->
+        
         <div class="navigation">
-          <!-- Logo at top of sidebar -->
+          <!-- Logo -->
           <div class="site-logo mt-5">
-            <a href="index.html"> <!-- Clicking logo returns to homepage -->
-              <img src="images/main-logo.png" alt="logo" class="img-fluid"> <!-- Responsive logo image -->
+            <a href="index.html">
+              <img src="images/main-logo.png" alt="logo" class="img-fluid">
             </a>
           </div>
 
-          <!-- Vertical Navigation Menu -->
+          <!-- Navigation Menu -->
           <nav id="one-page-menu" class="vertical-menu my-5">
-            <ul class="menu-list list-unstyled"> <!-- Remove default bullet points -->
-              <li><a href="index.html#billboard" class="nav-link">Home</a></li> <!-- Link to home section -->
-              <li><a href="index.html#about" class="nav-link">About</a></li> <!-- Link to about section -->
-              <li><a href="index.html#experience" class="nav-link">Experience</a></li> <!-- Link to experience section -->
-              <li><a href="index.html#portfolio" class="nav-link">Works</a></li> <!-- Link to portfolio section -->
-              <li><a href="index.html#contact" class="nav-link">Contact</a></li> <!-- Link to contact section -->
-              <li><a href="visualizations.html" class="nav-link fw-bold">Visualizations</a></li> <!-- Current page - bold to show active -->
+            <ul class="menu-list list-unstyled">
+              <li><a href="index.html#home" class="nav-link">Home</a></li>
+              <li><a href="index.html#about" class="nav-link">About</a></li>
+              <li><a href="index.html#experience" class="nav-link">Experience</a></li>
+              <li><a href="index.html#portfolio" class="nav-link">Works</a></li>
+              <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+              <li><a href="visualizations.html" class="nav-link fw-bold">Visualizations</a></li>
             </ul>
           </nav>
         </div>
 
-        <!-- Footer Section in Sidebar -->
+        <!-- Footer -->
         <div class="mt-5">
-          <div class="py-4 border-top"> <!-- Top border separator -->
-            <p class="small">Made by Mustafa</p> <!-- Author credit -->
+          <div class="py-4 border-top">
+            <p class="small">Made by Mustafa</p>
           </div>
         </div>
 
       </div>
     </header>
 
-    <!-- ============================ -->
-    <!-- MAIN CONTENT AREA            -->
-    <!-- ============================ -->
-    <main class="col-lg-10 offset-lg-2"> <!-- Offset by sidebar width -->
+    <!-- Main Content Area -->
+    <main class="col-lg-10 offset-lg-2">
       <div class="container py-5">
 
-        <!-- ============================ -->
-        <!-- PAGE HEADER                  -->
-        <!-- ============================ -->
-        <div class="page-header mb-5 text-center">
-          <h1 class="display-4 fw-bold">Video Game Sales Analysis</h1> <!-- Main page title -->
-          <p class="lead mb-0">Interactive Data Visualizations Using Vega-Lite</p> <!-- Subtitle -->
-          <p class="mt-2 opacity-75">Explore global trends, regional patterns, and storytelling through data</p> <!-- Additional context -->
+        <!-- Page Title with animation -->
+        <div class="mb-5 section-title">
+          <h1 class="display-5">Video Game Sales Visualizations</h1>
+          <p class="text-muted">Interactive data explorations using Vega-Lite</p>
         </div>
 
-        <!-- ============================ -->
-        <!-- VISUALIZATION 1              -->
-        <!-- ============================ -->
+        <!-- Visualization 1: Heatmap -->
         <div class="row g-4 mb-4">
           <div class="col-12">
-            <div class="card shadow-sm vis-card">
-              <div class="card-body">
-                <!-- Chart Title -->
-                <h3 class="h4 mb-3">
-                  <span class="badge bg-primary">1</span> <!-- Numbered badge -->
-                  Global Sales by Genre and Platform
-                </h3>
+            <div class="card vis-card">
+              <div class="card-body p-4">
+                <h3 class="h5 mb-3">Visualization 1: Global Sales by Genre and Platform</h3>
                 
-                <!-- Research Questions -->
-                <div class="question-prompt">
-                  <strong>🎯 Research Questions:</strong><br>
+                <div class="question-text">
+                  <strong>Research Questions:</strong><br>
                   1. Which genre-platform combinations generate the highest global sales?<br>
                   2. Are certain platforms dominated by specific genres?
                 </div>
                 
-                <!-- Chart Description -->
-                <p class="text-muted small mb-3">
-                  This heatmap shows total global sales for each combination of game genre and gaming platform. 
-                  Darker colors indicate higher sales volumes. Hover over any cell to see exact sales figures.
-                </p>
-                
-                <!-- Loading Indicator (will be replaced by chart) -->
-                <div class="vis-loading">Loading visualization...</div>
-                
-                <!-- Chart Container -->
-                <div id="vis1" class="vis-box"></div> <!-- Vega-Lite will render chart here -->
-                
-                <!-- Key Insights Box -->
-                <div class="insight-box">
-                  <strong>💡 What to Look For:</strong> Notice which platforms have the darkest cells - these are the most successful combinations. 
-                  Look for patterns: Do action games dominate certain platforms? Are sports games evenly distributed?
-                </div>
+                <div id="vis1" class="vis-box"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ============================ -->
-        <!-- VISUALIZATION 2              -->
-        <!-- ============================ -->
+        <!-- Visualization 2: Line Chart -->
         <div class="row g-4 mb-4">
           <div class="col-12">
-            <div class="card shadow-sm vis-card">
-              <div class="card-body">
-                <!-- Chart Title -->
-                <h3 class="h4 mb-3">
-                  <span class="badge bg-primary">2</span>
-                  Sales Trends Over Time by Platform
-                </h3>
+            <div class="card vis-card">
+              <div class="card-body p-4">
+                <h3 class="h5 mb-3">Visualization 2: Sales Over Time by Platform and Genre</h3>
                 
-                <!-- Research Questions -->
-                <div class="question-prompt">
-                  <strong>🎯 Research Questions:</strong><br>
+                <div class="question-text">
+                  <strong>Research Questions:</strong><br>
                   1. How have video game sales evolved across different platforms over the years?<br>
                   2. Which platforms experienced the most dramatic rise or decline in sales?
                 </div>
                 
-                <!-- Chart Description -->
-                <p class="text-muted small mb-3">
-                  This interactive line chart tracks sales trends over time. Use the dropdown to filter by genre, 
-                  click a platform in the legend to highlight it, and hover over points for detailed information. 
-                  You can also zoom and pan to explore specific time periods.
-                </p>
-                
-                <!-- Loading Indicator -->
-                <div class="vis-loading">Loading visualization...</div>
-                
-                <!-- Chart Container -->
                 <div id="vis2" class="vis-box"></div>
-                
-                <!-- Key Insights Box -->
-                <div class="insight-box">
-                  <strong>💡 What to Look For:</strong> Watch for platform life cycles - when did each platform peak? 
-                  Notice how newer platforms replace older ones. Try different genres to see if patterns change.
-                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ============================ -->
-        <!-- VISUALIZATION 3              -->
-        <!-- ============================ -->
+        <!-- Visualization 3: Stacked Bars -->
         <div class="row g-4 mb-4">
           <div class="col-12">
-            <div class="card shadow-sm vis-card">
-              <div class="card-body">
-                <!-- Chart Title -->
-                <h3 class="h4 mb-3">
-                  <span class="badge bg-primary">3</span>
-                  Regional Sales Distribution by Platform
-                </h3>
+            <div class="card vis-card">
+              <div class="card-body p-4">
+                <h3 class="h5 mb-3">Visualization 3: Regional Sales vs. Platform</h3>
                 
-                <!-- Research Questions -->
-                <div class="question-prompt">
-                  <strong>🎯 Research Questions:</strong><br>
-                  1. Do gaming platforms show different popularity levels across regions (North America, Europe, Japan, Others)?<br>
+                <div class="question-text">
+                  <strong>Research Questions:</strong><br>
+                  1. Do gaming platforms show different popularity levels across regions (NA, EU, JP, Others)?<br>
                   2. Which regions contribute most to each platform's total sales?
                 </div>
                 
-                <!-- Chart Description -->
-                <p class="text-muted small mb-3">
-                  This stacked bar chart breaks down platform sales by geographic region. Each bar represents a platform, 
-                  and colored segments show regional contributions. Click a region in the legend to highlight it across all platforms.
-                </p>
-                
-                <!-- Loading Indicator -->
-                <div class="vis-loading">Loading visualization...</div>
-                
-                <!-- Chart Container -->
                 <div id="vis3" class="vis-box"></div>
-                
-                <!-- Key Insights Box -->
-                <div class="insight-box">
-                  <strong>💡 What to Look For:</strong> Some platforms may be Japan-heavy (like Nintendo consoles), 
-                  while others dominate in North America or Europe. Notice regional preferences for different gaming ecosystems.
-                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ============================ -->
-        <!-- VISUALIZATION 4              -->
-        <!-- ============================ -->
-        <div class="row g-4 mb-4">
+        <!-- Visualization 4: Scatter Plot -->
+        <div class="row g-4 mb-5">
           <div class="col-12">
-            <div class="card shadow-sm vis-card">
-              <div class="card-body">
-                <!-- Chart Title -->
-                <h3 class="h4 mb-3">
-                  <span class="badge bg-primary">4</span>
-                  Visual Story: Japan's Gaming Market - Unique Preferences
-                </h3>
+            <div class="card vis-card">
+              <div class="card-body p-4">
+                <h3 class="h5 mb-3">Visualization 4: Japan's Gaming Market Story</h3>
                 
-                <!-- Research Questions -->
-                <div class="question-prompt">
-                  <strong>🎯 Research Questions:</strong><br>
+                <div class="question-text">
+                  <strong>Research Questions:</strong><br>
                   1. Which games have unusually high sales in Japan compared to their global performance?<br>
                   2. What genres or publishers tend to create "Japan-centric" games?
                 </div>
                 
-                <!-- Chart Description -->
-                <p class="text-muted small mb-3">
-                  This scatter plot reveals games where Japan represents a disproportionately large share of global sales. 
-                  Games higher on the Y-axis have a stronger Japanese market presence. Drag to select regions, 
-                  and scroll/pinch to zoom into specific areas of interest.
-                </p>
-                
-                <!-- Loading Indicator -->
-                <div class="vis-loading">Loading visualization...</div>
-                
-                <!-- Chart Container -->
                 <div id="vis4" class="vis-box"></div>
-                
-                <!-- Key Insights Box -->
-                <div class="insight-box">
-                  <strong>💡 What to Look For:</strong> Games at the top-right have both high total sales AND high Japanese market share. 
-                  Look for clusters - do certain genres or publishers dominate Japanese preferences? 
-                  This reveals cultural differences in gaming tastes.
-                </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ============================ -->
-        <!-- FOOTER NOTES                 -->
-        <!-- ============================ -->
-        <div class="row mt-5">
-          <div class="col-12">
-            <div class="alert alert-info">
-              <strong>📊 Data Source:</strong> Video game sales dataset including platform, genre, publisher, and regional sales data. 
-              All visualizations are interactive - experiment with clicking, hovering, and dragging to explore the data!
             </div>
           </div>
         </div>
@@ -331,23 +210,14 @@
 
   </div>
 
-  <!-- ============================ -->
-  <!-- JAVASCRIPT LIBRARIES         -->
-  <!-- ============================ -->
-  
-  <!-- Template Dependencies -->
-  <script src="js/jquery-1.11.0.min.js"></script> <!-- jQuery library for template -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap JavaScript -->
-  <script src="js/plugins.js"></script> <!-- Template plugins -->
-  <script src="js/script.js"></script> <!-- Template custom scripts -->
+  <!-- JavaScript Libraries -->
+  <script src="js/jquery-1.11.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/plugins.js"></script>
+  <script src="js/script.js"></script>
 
-  <!-- Vega Visualization Libraries (MUST load in this order) -->
-  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script> <!-- Vega core engine -->
-  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script> <!-- Vega-Lite grammar -->
-  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script> <!-- Embedding helper -->
-
-  <!-- Our Custom Visualization Code -->
-  <script src="js/visualizations.js"></script> <!-- This file creates all 4 charts -->
+  <!-- Visualization Script -->
+  <script src="js/visualizations.js"></script>
 
 </body>
 </html>
