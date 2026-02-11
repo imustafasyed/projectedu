@@ -30,40 +30,82 @@ window.addEventListener("load", async () => { // Run after page is fully loaded 
 
 document.addEventListener("DOMContentLoaded", function () {
 
-  // -------------------------------
-  // VIS 1 — UPDATED TARGET + SIZE
-  // -------------------------------
+  /* ---------------------------
+   VIS 1 — SIMPLE STACKED BAR
+   Total Sales by Genre (stacked by Region)
+   - Easy to understand
+   - Clickable legend (region)
+   - Clear axis labels
+   --------------------------- */
+const spec1 = {
+  $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+  data: { url: dataUrl },
 
-  // 1) Your existing Vis 1 spec object (keep your encodings/data exactly as-is)
-  //    Just ensure you set width/height + autosize like below.
-  const vis1Spec = {
-    // --- keep EVERYTHING you already have here (data, mark, encoding, etc.) ---
-    // Example placeholders below: replace with your actual spec content
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-    "description": "Global Sales by Genre and Platform",
-    "data": { "url": "data/vgsales.csv" },  // <-- keep your existing path
-    "mark": "bar",
-    "encoding": {
-      "x": { "field": "Genre", "type": "nominal" },
-      "y": { "aggregate": "sum", "field": "Global_Sales", "type": "quantitative" },
-      "color": { "field": "Platform", "type": "nominal" }
+  // Make data "long" so we can stack regions easily
+  transform: [
+    {
+      fold: ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"],
+      as: ["Region", "Sales"]
+    },
+    // Total sales per Genre per Region
+    {
+      aggregate: [{ op: "sum", field: "Sales", as: "Total_Sales" }],
+      groupby: ["Genre", "Region"]
+    }
+  ],
+
+  width: 1100,
+  height: 520,
+  autosize: { type: "none" },
+
+  // Clickable legend: click ONE region to highlight; dblclick clears
+  params: [
+    {
+      name: "regionPick",
+      select: { type: "point", fields: ["Region"], toggle: false },
+      bind: "legend",
+      clear: "dblclick"
+    }
+  ],
+
+  mark: { type: "bar" },
+
+  encoding: {
+    x: {
+      field: "Genre",
+      type: "nominal",
+      title: "Genre",          // ✅ X-axis label
+      sort: "-y",
+      axis: { labelAngle: 0 }
     },
 
-    // ✅ ADD/OVERRIDE THESE THREE LINES to match Vis 2–4 wide layout
-    "width": 1200,                 // forces Vis 1 to be same wide width as others
-    "height": 520,                 // makes it visually similar inside 620px container
-    "autosize": { "type": "none" } // ensures width/height are respected (no shrinking)
-  };
+    y: {
+      field: "Total_Sales",
+      type: "quantitative",
+      title: "Total Sales (Millions)",  // ✅ Y-axis label
+      stack: "zero"
+    },
 
-  // 2) Embed Vis 1 into the INNER wrapper so the scroll container remains intact
-  vegaEmbed("#vis1 .vis-inner", vis1Spec, {
-    actions: false,               // hides "Open in Vega Editor" etc. (optional)
-    renderer: "canvas"            // good default; keep if you already use it
-  }).then((res) => {
-    // ✅ ensures the view recalculates size correctly after render
-    res.view.resize();
-    res.view.run();
-  }).catch(console.error);
+    color: {
+      field: "Region",
+      type: "nominal",
+      title: "Region",         // ✅ Legend title
+      scale: { scheme: "tableau10" }
+    },
+
+    // Highlight selected region (legend click)
+    opacity: {
+      condition: { param: "regionPick", value: 1 },
+      value: 0.25
+    },
+
+    tooltip: [
+      { field: "Genre", type: "nominal", title: "Genre" },
+      { field: "Region", type: "nominal", title: "Region" },
+      { field: "Total_Sales", type: "quantitative", title: "Sales", format: ".2f" }
+    ]
+  }
+};
 
   // -------------------------------
   // VIS 2 / VIS 3 / VIS 4
