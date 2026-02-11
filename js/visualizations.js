@@ -36,35 +36,94 @@ function showError(visId, err) {
 
 document.addEventListener("DOMContentLoaded", async () => {
 
+
   /* ---------------------------
-     VIS 1 — Global Sales by Genre and Platform
-     --------------------------- */
-  const spec1 = {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-    data: { url: dataUrl },
+   VIS 1 — HEATMAP: Global Sales by Genre (X) and Platform (Y)
+   Clickable legend: select a Sales Band (discrete bins) from the legend
+   --------------------------- */
+const spec1 = {
+  $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+  data: { url: dataUrl },
 
-    width: 1200,
-    height: 520,
-    autosize: { type: "none" },
-
-    mark: { type: "bar" },
-    encoding: {
-      x: { field: "Genre", type: "nominal", title: "Genre", sort: "-y" },
-      y: {
-        aggregate: "sum",
-        field: "Global_Sales",
-        type: "quantitative",
-        title: "Total Global Sales"
-      },
-      color: { field: "Platform", type: "nominal", title: "Platform" },
-      tooltip: [
-        { field: "Genre", type: "nominal" },
-        { field: "Platform", type: "nominal" },
-        { aggregate: "sum", field: "Global_Sales", type: "quantitative", format: ".2f", title: "Global Sales" }
-      ]
+  // 1) Aggregate global sales by Genre x Platform
+  transform: [
+    {
+      aggregate: [
+        { op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }
+      ],
+      groupby: ["Genre", "Platform"]
+    },
+    // 2) Bin the aggregated sales so the legend becomes discrete + clickable
+    {
+      bin: { maxbins: 7 },             // adjust bins if you want (e.g., 5 or 9)
+      field: "Total_Global_Sales",
+      as: ["Sales_Bin_Start", "Sales_Bin_End"]
+    },
+    // 3) Friendly label for legend
+    {
+      calculate: "format(datum.Sales_Bin_Start, '.2f') + ' – ' + format(datum.Sales_Bin_End, '.2f')",
+      as: "Sales_Band"
     }
-  };
+  ],
 
+  width: 1200,
+  height: 520,
+  autosize: { type: "none" },
+
+  // Clickable legend selection (single select)
+  params: [
+    {
+      name: "bandPick",
+      select: { type: "point", fields: ["Sales_Band"], toggle: false },
+      bind: "legend",
+      clear: "dblclick" // double click to clear selection
+    }
+  ],
+
+  mark: { type: "rect" },
+
+  encoding: {
+    x: {
+      field: "Genre",
+      type: "nominal",
+      title: "Genre",                 // ✅ X-axis label
+      sort: "-color"
+    },
+
+    y: {
+      field: "Platform",
+      type: "nominal",
+      title: "Platform"               // ✅ Y-axis label
+    },
+
+    // Color is DISCRETE (Sales_Band), so legend is clickable
+    color: {
+      field: "Sales_Band",
+      type: "ordinal",
+      title: "Global Sales (Binned)", // ✅ legend title
+      scale: { scheme: "blues" }
+    },
+
+    // Highlight only the selected band via opacity
+    opacity: {
+      condition: { param: "bandPick", value: 1 },
+      value: 0.25
+    },
+
+    tooltip: [
+      { field: "Genre", type: "nominal", title: "Genre" },
+      { field: "Platform", type: "nominal", title: "Platform" },
+      { field: "Total_Global_Sales", type: "quantitative", title: "Total Global Sales", format: ".2f" },
+      { field: "Sales_Band", type: "ordinal", title: "Sales Band" }
+    ]
+  },
+
+  // Optional: draw thin grid lines for readability
+  config: {
+    view: { stroke: "transparent" },
+    axis: { labelFontSize: 12, titleFontSize: 13 }
+  }
+};
   /* ---------------------------
      VIS 2 — Sales Over Time by Platform and Genre
      (Single-select legend + hover + zoom/pan; genre dropdown)
