@@ -59,9 +59,6 @@ window.addEventListener("load", async () => {
     // Set a fixed height
     height: 420,
     
-    // Make sure it fits nicely in the space
-    autosize: { type: "fit", contains: "padding" },
-    
     // TRANSFORM: Process the data before visualizing
     transform: [
       {
@@ -124,8 +121,7 @@ window.addEventListener("load", async () => {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
     width: "container",
-    height: 450,
-    autosize: { type: "fit", contains: "padding" },
+    height: 420,
     
     // PARAMETERS: Interactive controls
     params: [
@@ -264,8 +260,7 @@ window.addEventListener("load", async () => {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
     width: "container",
-    height: 580, // Taller to fit all platforms
-    autosize: { type: "fit", contains: "padding" },
+    height: 560,
     
     // PARAMETERS: Interactive controls
     params: [
@@ -376,8 +371,7 @@ window.addEventListener("load", async () => {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
     width: "container",
-    height: 480,
-    autosize: { type: "fit", contains: "padding" },
+    height: 460,
     
     // PARAMETERS: Interactive controls
     params: [
