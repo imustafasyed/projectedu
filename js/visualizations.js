@@ -66,7 +66,7 @@ const spec1 = {
     }
   ],
 
-  width: 1200,
+  width: 800,
   height: 520,
   autosize: { type: "none" },
 
