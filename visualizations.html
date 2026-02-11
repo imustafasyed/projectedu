@@ -4,33 +4,37 @@
   <meta charset="utf-8"> <!-- Encoding -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- Compatibility -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive -->
+  <meta name="format-detection" content="telephone=no"> <!-- No phone auto-detect -->
+  <meta name="apple-mobile-web-app-capable" content="yes"> <!-- iOS support -->
 
   <title>Visualizations | Mustafa Syed</title> <!-- Tab title -->
 
-  css/vendor.css <!-- Template vendor CSS --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
-  https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css <!-- Bootstrap --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
-  style.css <!-- Your theme CSS --> <!-- [1](https://github.com/vega/vega-lite/issues/8979)[4](https://stackoverflow.com/questions/67005716/what-should-the-value-parameter-look-like-when-programmatically-triggering-a-sig) -->
+  <link rel="stylesheet" type="text/css" href="css/vendor.css"> <!-- Template vendor CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap -->
+  <link rel="stylesheet" type="text/css" href="style.css"> <!-- Your template CSS -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com"> <!-- Faster fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!-- Faster fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap" rel="stylesheet"> <!-- Roboto --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap" rel="stylesheet"> <!-- Roboto -->
 
-  <!-- Page-only styling (keeps your theme but makes chart blocks consistent) -->
+  <!-- Page-specific styling: make wide charts truly 1200px and scrollable -->
   <style>
-    .vis-card { border-radius: 18px; } /* Smooth card corners */
-    .vis-box { min-height: 460px; width: 100%; } /* SAME container behavior for all charts */
+    .vis-card { border-radius: 18px; } /* Rounded cards */
+    .vis-box { min-height: 460px; width: 100%; } /* Vis 1 container */
+    .vis-box-wide { min-height: 620px; width: 100%; overflow-x: auto; } /* Vis 2-4 container with horizontal scroll */
+    .vis-inner { min-width: 1200px; } /* Ensures the Vega chart has room to be 1200px */
   </style>
 </head>
 
-<body class="bg-body homepage post-template" data-bs-spy="scroll" data-bs-target="#header-nav" tabindex="0"> <!-- Same body style as template --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
+<body class="bg-body homepage post-template" data-bs-spy="scroll" data-bs-target="#header-nav" tabindex="0">
 
-  <a class="menu-btn"><span></span></a> <!-- Mobile menu button --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
+  <a class="menu-btn"><span></span></a> <!-- Mobile menu button -->
 
-  <div class="container-fluid overflow-hidden"> <!-- Template wrapper --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
+  <div class="container-fluid overflow-hidden"> <!-- Template wrapper -->
 
-    <!-- Sidebar -->
-    <header id="header-nav" class="col-lg-2 position-fixed px-5 bg-white h-100"> <!-- Fixed sidebar --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
-      <div class="header-wrap d-flex flex-column justify-content-between h-100"> <!-- Sidebar layout --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
+    <!-- Sidebar (kept consistent with your theme) -->
+    <header id="header-nav" class="col-lg-2 position-fixed px-5 bg-white h-100">
+      <div class="header-wrap d-flex flex-column justify-content-between h-100">
 
         <div class="navigation">
           <div class="site-logo mt-5">
@@ -45,32 +49,41 @@
               <li><a href="index.html#about" class="nav-link">About</a></li>
               <li><a href="index.html#experience" class="nav-link">Experience</a></li>
               <li><a href="index.html#portfolio" class="nav-link">Works</a></li>
-             
-            <p>HTML by https://templatesjungle.com/TemplatesJungle</a></p> <!-- Keep credit --> <!-- [5](https://observablehq.com/@dmarr/update-vega-lite-brush-programmatically) -->
+              <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+              <li><a href="visualizations.html" class="nav-link active">Visualizations</a></li> <!-- This page -->
+            </ul>
+          </nav>
+        </div>
+
+        <!-- Required credit for free template -->
+        <div class="mt-5">
+          <div class="py-4 border-top">
+            <p>HTML by <a href="https://templatesjungle.com/" target="_blank">TemplatesJungle</a></p>
           </div>
         </div>
 
       </div>
     </header>
 
-    <!-- Main -->
-    <main class="col-lg-10 offset-lg-2"> <!-- Same main layout as template --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
+    <!-- Main content -->
+    <main class="col-lg-10 offset-lg-2">
+
+      <!-- Header and Vis 1 (normal width) -->
       <div class="container">
-        <div class="justify-content-center px-1 mx-1 px-xl-5 mx-xl-5"> <!-- Same spacing wrapper --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
+        <div class="justify-content-center px-1 mx-1 px-xl-5 mx-xl-5">
 
-          <section class="my-5 py-5 bg-text" data-text="06"> <!-- Page section -->
-
+          <section class="my-5 py-5 bg-text" data-text="06">
             <div class="row justify-content-center mb-4">
-              <div class="col-lg-10" data-aos="fade-up"> <!-- AOS fade for header -->
+              <div class="col-lg-10" data-aos="fade-up">
                 <span class="text-muted text-uppercase">Data Visualization</span>
                 <h2 class="display-1 txt-fx slide-up">Interactive Visualizations</h2>
-                <p class="text-muted mt-3 mb-0">All charts below share the same page width for a consistent layout.</p>
+                <p class="text-muted mt-3 mb-0">
+                  Hover, click, and zoom to explore video game sales patterns.
+                </p>
               </div>
             </div>
 
-            <!-- ✅ IMPORTANT: All charts use the SAME width wrapper: row + col-lg-10 -->
             <div class="row justify-content-center g-4">
-
               <div class="col-lg-10">
                 <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="0">
                   <div class="card-body p-4">
@@ -79,47 +92,55 @@
                   </div>
                 </div>
               </div>
-
-              <div class="col-lg-10">
-                <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="100">
-                  <div class="card-body p-4">
-                    <h3 class="h4 mb-2">2) Sales Over Time by Platform and Genre</h3>
-                    <p class="text-muted mb-3">Single-select: click ONE platform in legend. Double-click to clear.</p>
-                    <div id="vis2" class="vis-box">Loading chart…</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-lg-10">
-                <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="200">
-                  <div class="card-body p-4">
-                    <h3 class="h4 mb-2">3) Regional Sales vs Platform</h3>
-                    <p class="text-muted mb-3">Single-select: click ONE region in legend. Double-click to clear.</p>
-                    <div id="vis3" class="vis-box">Loading chart…</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-lg-10">
-                <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="300">
-                  <div class="card-body p-4">
-                    <h3 class="h4 mb-2">4) Visual Story — Japan Share vs Global Sales</h3>
-                    <p class="text-muted mb-3">Brush-select points + zoom/pan to explore clusters.</p>
-                    <div id="vis4" class="vis-box">Loading chart…</div>
-                  </div>
-                </div>
-              </div>
-
             </div>
-          </section>
 
+          </section>
         </div>
       </div>
-    </main>
 
+      <!-- Vis 2–4 (wide) -->
+      <section class="my-4 pb-5">
+        <div class="container-fluid px-4 px-xl-5">
+          <div class="row g-4">
+
+            <div class="col-12">
+              <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-body p-4">
+                  <h3 class="h4 mb-2">2) Sales Over Time by Platform and Genre</h3>
+                  <p class="text-muted mb-3">Single-select: click ONE platform in the legend. Double-click to clear.</p>
+                  <div id="vis2" class="vis-box-wide"><div class="vis-inner">Loading chart…</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="card-body p-4">
+                  <h3 class="h4 mb-2">3) Regional Sales vs Platform</h3>
+                  <p class="text-muted mb-3">Single-select: click ONE region in the legend. Double-click to clear.</p>
+                  <div id="vis3" class="vis-box-wide"><div class="vis-inner">Loading chart…</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="card shadow-sm vis-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="card-body p-4">
+                  <h3 class="h4 mb-2">4) Visual Story — Japan Share vs Global Sales</h3>
+                  <p class="text-muted mb-3">Brush-select points, and use zoom/pan to explore.</p>
+                  <div id="vis4" class="vis-box-wide"><div class="vis-inner">Loading chart…</div></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
   </div>
 
-  <!-- Template scripts --> <!-- [1](https://github.com/vega/vega-lite/issues/8979) -->
+  <!-- Template scripts -->
   <script src="js/jquery-1.11.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/plugins.js"></script>
@@ -127,17 +148,17 @@
 
   <!-- AOS init (safe) -->
   <script>
-    document.addEventListener("DOMContentLoaded", function () { // Run after HTML loads //
-      if (window.AOS) { window.AOS.init({ once: true, duration: 900, easing: "ease-out" }); } // Start AOS if available //
+    document.addEventListener("DOMContentLoaded", function () { // run after HTML loads
+      if (window.AOS) { window.AOS.init({ once: true, duration: 900, easing: "ease-out" }); } // start AOS if available
     });
   </script>
 
   <!-- Vega libraries (correct order) -->
-  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script> <!-- Vega -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script> <!-- Vega engine -->
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script> <!-- Vega-Lite -->
-  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script> <!-- Vega Embed -->
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script> <!-- Vega embed -->
 
-  <!-- Your chart file -->
+  <!-- Your chart file (load last) -->
   <script src="js/visualizations.js"></script> <!-- Render charts -->
 </body>
 </html>
