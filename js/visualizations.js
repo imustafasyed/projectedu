@@ -2,26 +2,25 @@
 /*  FINAL: js/visualizations.js    */
 /* =============================== */
 
-const dataUrl = "data/videogames_wide.csv"; // Dataset location on your site //
+const dataUrl = "data/videogames_wide.csv"; // CSV path //
 
-const embedOptions = { // Embed settings //
+const embedOptions = { // Embed options //
   actions: false, // Hide action buttons //
-  renderer: "svg" // SVG stays crisp when wide //
+  renderer: "svg" // Crisp charts //
 };
 
-function showError(targetId, err) { // Simple helper to show errors on the page //
-  const el = document.querySelector(targetId); // Find the chart container //
-  if (el) { // If container exists //
-    el.innerHTML = `<div style="color:#b00020;font-weight:600;">Chart failed to load:</div>
+function showError(targetId, err) { // Show readable errors on the page //
+  const el = document.querySelector(targetId); // Find container //
+  if (el) { // If it exists //
+    el.innerHTML = `<div style="color:#b00020;font-weight:700;">Chart failed to load</div>
                     <pre style="white-space:pre-wrap;">${String(err)}</pre>`; // Print error //
   }
-  console.error(err); // Also log to console for debugging //
+  console.error(err); // Also log error //
 }
 
-/* Wait until everything is loaded (HTML + scripts) */
-window.addEventListener("load", async () => { // Run after the page fully loads //
+window.addEventListener("load", async () => { // Run after page is fully loaded //
 
-  /* ---------------- VIS 1 (responsive, normal size) ---------------- */
+  /* ---------------- VIS 1 ---------------- */
   const spec1 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
@@ -44,42 +43,52 @@ window.addEventListener("load", async () => { // Run after the page fully loads 
     }
   };
 
-  /* ---------------- VIS 2 (explicitly wide + single-select + zoom) ---------------- */
+  /* ---------------- VIS 2 (FIXED: selection params live in ONE layer) ---------------- */
   const spec2 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
-    width: 1200, // Explicit wide width so it matches the wide container //
+    width: 1200, // Always 1200px as you requested //
     height: 420,
-    autosize: { type: "fit", contains: "padding" },
-    params: [
+
+    params: [ // Only NON-selection param at top level //
       {
         name: "pickGenre",
         value: "Action",
-        bind: { input: "select", options: ["Action","Sports","Shooter","Role-Playing","Platform","Racing","Misc","Fighting","Simulation","Puzzle","Adventure","Strategy"], name: "Choose Genre: " }
-      },
-      {
-        name: "platformPick",
-        select: { type: "point", fields: ["Platform"], toggle: false }, // SINGLE-select //
-        bind: "legend",
-        clear: "dblclick"
-      },
-      {
-        name: "hoverPoint",
-        select: { type: "point", fields: ["Platform"], nearest: true, on: "mouseover", clear: "mouseout" }
-      },
-      {
-        name: "zoomPan",
-        select: { type: "interval", bind: "scales" }
+        bind: {
+          input: "select",
+          options: ["Action","Sports","Shooter","Role-Playing","Platform","Racing","Misc","Fighting","Simulation","Puzzle","Adventure","Strategy"],
+          name: "Choose Genre: "
+        }
       }
     ],
+
     transform: [
       { filter: "datum.Year != null && datum.Year != 'N/A'" },
       { calculate: "toNumber(datum.Year)", as: "YearNum" },
       { filter: "datum.Genre === pickGenre" },
       { aggregate: [{ op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }], groupby: ["YearNum","Platform"] }
     ],
+
     layer: [
       {
+        /* Put ALL selection params ONLY in this FIRST layer to avoid duplicate signal bugs. */
+        params: [
+          {
+            name: "platformPick",
+            select: { type: "point", fields: ["Platform"], toggle: false }, // Single-select //
+            bind: "legend",
+            clear: "dblclick"
+          },
+          {
+            name: "hoverPoint",
+            select: { type: "point", fields: ["Platform"], nearest: true, on: "mouseover", clear: "mouseout" }
+          },
+          {
+            name: "zoomPan",
+            select: { type: "interval", bind: "scales" } // Zoom/pan //
+          }
+        ],
+
         mark: { type: "line", strokeWidth: 2 },
         encoding: {
           x: { field: "YearNum", type: "quantitative", title: "Year" },
@@ -105,20 +114,14 @@ window.addEventListener("load", async () => { // Run after the page fully loads 
     ]
   };
 
-  /* ---------------- VIS 3 (explicitly wide + legend focus) ---------------- */
+  /* ---------------- VIS 3 ---------------- */
   const spec3 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
-    width: 1200, // Explicit wide width //
+    width: 1200, // Always 1200px //
     height: 560,
-    autosize: { type: "fit", contains: "padding" },
     params: [
-      {
-        name: "regionPick",
-        select: { type: "point", fields: ["Region"], toggle: false }, // SINGLE-select //
-        bind: "legend",
-        clear: "dblclick"
-      }
+      { name: "regionPick", select: { type: "point", fields: ["Region"], toggle: false }, bind: "legend", clear: "dblclick" }
     ],
     transform: [
       { fold: ["NA_Sales","EU_Sales","JP_Sales","Other_Sales"], as: ["Region","Sales"] },
@@ -138,13 +141,12 @@ window.addEventListener("load", async () => { // Run after the page fully loads 
     }
   };
 
-  /* ---------------- VIS 4 (explicitly wide + brush + zoom/pan) ---------------- */
+  /* ---------------- VIS 4 ---------------- */
   const spec4 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
-    width: 1200, // Explicit wide width //
+    width: 1200, // Always 1200px //
     height: 460,
-    autosize: { type: "fit", contains: "padding" },
     params: [
       { name: "brush", select: { type: "interval" } },
       { name: "zoomPan", select: { type: "interval", bind: "scales" } }
@@ -171,7 +173,7 @@ window.addEventListener("load", async () => { // Run after the page fully loads 
     }
   };
 
-  /* Render all charts (with error handling) */
+  /* Render charts with error display */
   try { await vegaEmbed("#vis1", spec1, embedOptions); } catch (e) { showError("#vis1", e); }
   try { await vegaEmbed("#vis2", spec2, embedOptions); } catch (e) { showError("#vis2", e); }
   try { await vegaEmbed("#vis3", spec3, embedOptions); } catch (e) { showError("#vis3", e); }
