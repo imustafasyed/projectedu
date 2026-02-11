@@ -31,6 +31,8 @@
       background: var(--bs-white);
       border: 1px solid var(--bs-gray-300);
       transition: all 0.3s var(--custom-easing);
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .vis-card:hover {
@@ -40,7 +42,7 @@
 
     /* Chart container */
     .vis-box {
-      min-height: 450px;
+      min-height: 420px;
       position: relative;
     }
 
@@ -68,12 +70,6 @@
         transform: translateY(0);
       }
     }
-
-    /* Stagger animation delays */
-    .vis-card:nth-child(1) { animation-delay: 0.1s; }
-    .vis-card:nth-child(2) { animation-delay: 0.2s; }
-    .vis-card:nth-child(3) { animation-delay: 0.3s; }
-    .vis-card:nth-child(4) { animation-delay: 0.4s; }
   </style>
 </head>
 
