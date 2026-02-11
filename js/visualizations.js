@@ -47,8 +47,9 @@ window.addEventListener("load", async () => { // Run after page is fully loaded 
   const spec2 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
-    width: 1200, // Always 1200px as you requested //
+    width: "container", // Always 1200px as you requested //
     height: 420,
+    autosize: { type: "fit", contains: "padding" },
 
     params: [ // Only NON-selection param at top level //
       {
@@ -118,8 +119,9 @@ window.addEventListener("load", async () => { // Run after page is fully loaded 
   const spec3 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
-    width: 1200, // Always 1200px //
+    width: "container", // Always 1200px //
     height: 560,
+    autosize: { type: "fit", contains: "padding" },
     params: [
       { name: "regionPick", select: { type: "point", fields: ["Region"], toggle: false }, bind: "legend", clear: "dblclick" }
     ],
