@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Visualization Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .vis-container { border: 2px solid #ccc; margin: 20px 0; padding: 20px; }
+    h2 { color: #333; }
+  </style>
+</head>
+<body>
+  <h1>Visualization Debug Test</h1>
+  
+  <div class="vis-container">
+    <h2>Test Chart</h2>
+    <div id="test-vis" style="min-height: 400px;"></div>
+  </div>
+
+  <div id="error-log" style="background: #ffe6e6; padding: 15px; margin: 20px 0; display: none;">
+    <h3>Error Log:</h3>
+    <pre id="error-text"></pre>
+  </div>
+
+  <script>
+    // Test if Vega libraries loaded
+    console.log("Vega loaded:", typeof vega !== 'undefined');
+    console.log("Vega-Lite loaded:", typeof vegaLite !== 'undefined');
+    console.log("Vega-Embed loaded:", typeof vegaEmbed !== 'undefined');
+
+    const spec = {
+      $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+      description: "Test chart",
+      data: {
+        url: "data/videogames_wide.csv"
+      },
+      mark: "bar",
+      encoding: {
+        x: { field: "Platform", type: "nominal" },
+        y: { aggregate: "count", type: "quantitative" }
+      },
+      width: 600,
+      height: 400
+    };
+
+    vegaEmbed('#test-vis', spec, {actions: false})
+      .then(result => {
+        console.log("SUCCESS: Chart rendered!", result);
+        document.body.style.background = "#e6ffe6";
+      })
+      .catch(error => {
+        console.error("ERROR:", error);
+        document.getElementById('error-log').style.display = 'block';
+        document.getElementById('error-text').textContent = error.toString() + "\n\n" + error.stack;
+        document.body.style.background = "#ffe6e6";
+      });
+  </script>
+</body>
+</html>
