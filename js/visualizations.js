@@ -24,9 +24,9 @@ window.addEventListener("load", async () => { // Run after page is fully loaded 
   const spec1 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
-    width: "container",
+    width: "1200",
     height: 420,
-    autosize: { type: "fit", contains: "padding" },
+    
     transform: [
       { aggregate: [{ op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }], groupby: ["Genre", "Platform"] }
     ],
