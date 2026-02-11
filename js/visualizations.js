@@ -1,212 +1,75 @@
-/* =============================== */
-/*  FINAL: js/visualizations.js    */
-/* =============================== */
+/* visualizations.js
+   Goal:
+   - Ensure Vis 1 renders the SAME size/location as Vis 2–4
+   - Embed ALL charts into the inner wrapper: #visX .vis-inner
+   - Force consistent width (1200) so Vis 1 can’t appear smaller
+*/
 
-const dataUrl = "data/videogames_wide.csv"; // CSV path //
+document.addEventListener("DOMContentLoaded", () => {
+  // =========================
+  // SPEC SOURCES (EDIT THESE)
+  // =========================
+  // Option 1 (most common): point to your Vega/Vega-Lite JSON spec files
+  // Replace these paths with YOUR actual spec paths used in your project.
+  const VIS1_SPEC = "specs/vis1.json"; // <-- CHANGE to your real path OR replace with inline spec object
+  const VIS2_SPEC = "specs/vis2.json"; // <-- CHANGE
+  const VIS3_SPEC = "specs/vis3.json"; // <-- CHANGE
+  const VIS4_SPEC = "specs/vis4.json"; // <-- CHANGE
 
-const embedOptions = { // Embed options //
-  actions: false, // Hide action buttons //
-  renderer: "svg" // Crisp charts //
-};
+  // Option 2: If you used inline spec objects before, replace VIS1_SPEC etc with the objects:
+  // const VIS1_SPEC = { ...your Vega-Lite spec... };
 
-function showError(targetId, err) { // Show readable errors on the page //
-  const el = document.querySelector(targetId); // Find container //
-  if (el) { // If it exists //
-    el.innerHTML = `<div style="color:#b00020;font-weight:700;">Chart failed to load</div>
-                    <pre style="white-space:pre-wrap;">${String(err)}</pre>`; // Print error //
+  // =========================
+  // GLOBAL EMBED SETTINGS
+  // =========================
+  const EMBED_OPTS = {
+    actions: false,          // hides Vega-Embed action links
+    renderer: "canvas"       // consistent rendering
+  };
+
+  // =========================
+  // SIZE SETTINGS (CONSISTENT)
+  // =========================
+  const WIDE_WIDTH = 1200;   // matches .vis-inner { min-width: 1200px; }
+  const WIDE_HEIGHT = 520;   // visually fits well inside .vis-box-wide { min-height: 620px; }
+
+  // =========================
+  // HELPERS
+  // =========================
+
+  // Always embed into the inner wrapper if it exists; fallback to the container itself.
+  function targetSelector(visId) {
+    const inner = document.querySelector(`#${visId} .vis-inner`);
+    return inner ? `#${visId} .vis-inner` : `#${visId}`;
   }
-  console.error(err); // Also log error //
-}
 
-window.addEventListener("load", async () => { // Run after page is fully loaded //
-
-
-
-
-
-
-  /* visualizations.js
-   Update: Vis 1 embeds into #vis1 .vis-inner and matches Vis 2–4 wide size (1200px) */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  // -------------------------------
-  // VIS 1 — UPDATED TARGET + SIZE
-  // -------------------------------
-
-  // 1) Your existing Vis 1 spec object (keep your encodings/data exactly as-is)
-  //    Just ensure you set width/height + autosize like below.
-  const vis1Spec = {
-    // --- keep EVERYTHING you already have here (data, mark, encoding, etc.) ---
-    // Example placeholders below: replace with your actual spec content
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-    "description": "Global Sales by Genre and Platform",
-    "data": { "url": "data/vgsales.csv" },  // <-- keep your existing path
-    "mark": "bar",
-    "encoding": {
-      "x": { "field": "Genre", "type": "nominal" },
-      "y": { "aggregate": "sum", "field": "Global_Sales", "type": "quantitative" },
-      "color": { "field": "Platform", "type": "nominal" }
-    },
-
-    // ✅ ADD/OVERRIDE THESE THREE LINES to match Vis 2–4 wide layout
-    "width": 1200,                 // forces Vis 1 to be same wide width as others
-    "height": 520,                 // makes it visually similar inside 620px container
-    "autosize": { "type": "none" } // ensures width/height are respected (no shrinking)
-  };
-
-  // 2) Embed Vis 1 into the INNER wrapper so the scroll container remains intact
-  vegaEmbed("#vis1 .vis-inner", vis1Spec, {
-    actions: false,               // hides "Open in Vega Editor" etc. (optional)
-    renderer: "canvas"            // good default; keep if you already use it
-  }).then((res) => {
-    // ✅ ensures the view recalculates size correctly after render
-    res.view.resize();
-    res.view.run();
-  }).catch(console.error);
-
-  // -------------------------------
-  // VIS 2 / VIS 3 / VIS 4
-  // -------------------------------
-  // Leave your existing Vis 2–4 code exactly as it is.
-});
-
-  /* ---------------- VIS 2 (FIXED: selection params live in ONE layer) ---------------- */
-  const spec2 = {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-    data: { url: dataUrl },
-    width: "container", // Always 1200px as you requested //
-    height: 420,
-    autosize: { type: "fit", contains: "padding" },
-
-    params: [ // Only NON-selection param at top level //
-      {
-        name: "pickGenre",
-        value: "Action",
-        bind: {
-          input: "select",
-          options: ["Action","Sports","Shooter","Role-Playing","Platform","Racing","Misc","Fighting","Simulation","Puzzle","Adventure","Strategy"],
-          name: "Choose Genre: "
-        }
-      }
-    ],
-
-    transform: [
-      { filter: "datum.Year != null && datum.Year != 'N/A'" },
-      { calculate: "toNumber(datum.Year)", as: "YearNum" },
-      { filter: "datum.Genre === pickGenre" },
-      { aggregate: [{ op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }], groupby: ["YearNum","Platform"] }
-    ],
-
-    layer: [
-      {
-        /* Put ALL selection params ONLY in this FIRST layer to avoid duplicate signal bugs. */
-        params: [
-          {
-            name: "platformPick",
-            select: { type: "point", fields: ["Platform"], toggle: false }, // Single-select //
-            bind: "legend",
-            clear: "dblclick"
-          },
-          {
-            name: "hoverPoint",
-            select: { type: "point", fields: ["Platform"], nearest: true, on: "mouseover", clear: "mouseout" }
-          },
-          {
-            name: "zoomPan",
-            select: { type: "interval", bind: "scales" } // Zoom/pan //
-          }
-        ],
-
-        mark: { type: "line", strokeWidth: 2 },
-        encoding: {
-          x: { field: "YearNum", type: "quantitative", title: "Year" },
-          y: { field: "Total_Global_Sales", type: "quantitative", title: "Total Global Sales" },
-          color: { field: "Platform", type: "nominal", title: "Platform" },
-          opacity: { condition: { param: "platformPick", value: 1 }, value: 0.12 }
-        }
-      },
-      {
-        mark: { type: "point", filled: true, size: 70 },
-        encoding: {
-          x: { field: "YearNum", type: "quantitative" },
-          y: { field: "Total_Global_Sales", type: "quantitative" },
-          color: { field: "Platform", type: "nominal" },
-          opacity: { condition: { param: "hoverPoint", value: 1 }, value: 0 },
-          tooltip: [
-            { field: "Platform", type: "nominal" },
-            { field: "YearNum", type: "quantitative", title: "Year" },
-            { field: "Total_Global_Sales", type: "quantitative", format: ".2f" }
-          ]
-        }
-      }
-    ]
-  };
-
-  /* ---------------- VIS 3 ---------------- */
-  const spec3 = {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-    data: { url: dataUrl },
-    width: "container", // Always 1200px //
-    height: 560,
-    autosize: { type: "fit", contains: "padding" },
-    params: [
-      { name: "regionPick", select: { type: "point", fields: ["Region"], toggle: false }, bind: "legend", clear: "dblclick" }
-    ],
-    transform: [
-      { fold: ["NA_Sales","EU_Sales","JP_Sales","Other_Sales"], as: ["Region","Sales"] },
-      { aggregate: [{ op: "sum", field: "Sales", as: "Total_Sales" }], groupby: ["Platform","Region"] }
-    ],
-    mark: "bar",
-    encoding: {
-      y: { field: "Platform", type: "nominal", sort: "-x", title: "Platform" },
-      x: { field: "Total_Sales", type: "quantitative", title: "Total Sales" },
-      color: { field: "Region", type: "nominal", title: "Region" },
-      opacity: { condition: { param: "regionPick", value: 1 }, value: 0.25 },
-      tooltip: [
-        { field: "Platform", type: "nominal" },
-        { field: "Region", type: "nominal" },
-        { field: "Total_Sales", type: "quantitative", format: ".2f" }
-      ]
+  // Force size consistently AFTER embed (works even when spec comes from URL)
+  function forceSize(result, width = WIDE_WIDTH, height = WIDE_HEIGHT) {
+    try {
+      result.view.width(width);
+      result.view.height(height);
+      result.view.resize();
+      result.view.run();
+    } catch (e) {
+      console.warn("Could not force chart size:", e);
     }
-  };
+  }
 
-  /* ---------------- VIS 4 ---------------- */
-  const spec4 = {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-    data: { url: dataUrl },
-    width: 1200, // Always 1200px //
-    height: 460,
-    params: [
-      { name: "brush", select: { type: "interval" } },
-      { name: "zoomPan", select: { type: "interval", bind: "scales" } }
-    ],
-    transform: [
-      { calculate: "datum.Global_Sales > 0 ? datum.JP_Sales / datum.Global_Sales : null", as: "JP_Share" },
-      { filter: "isValid(datum.JP_Share)" },
-      { filter: "datum.Global_Sales >= 0.5" }
-    ],
-    mark: { type: "circle", opacity: 0.75, size: 70 },
-    encoding: {
-      x: { field: "Global_Sales", type: "quantitative", title: "Global Sales" },
-      y: { field: "JP_Share", type: "quantitative", title: "Japan Share (JP / Global)", scale: { domain: [0, 1] } },
-      color: { field: "Genre", type: "nominal", title: "Genre" },
-      opacity: { condition: { param: "brush", value: 1 }, value: 0.15 },
-      tooltip: [
-        { field: "Name", type: "nominal" },
-        { field: "Platform", type: "nominal" },
-        { field: "Genre", type: "nominal" },
-        { field: "Publisher", type: "nominal" },
-        { field: "Global_Sales", type: "quantitative", format: ".2f" },
-        { field: "JP_Share", type: "quantitative", format: ".0%" }
-      ]
-    }
-  };
+  // Embed one chart and force consistent size
+  function embedVis(visId, spec) {
+    return vegaEmbed(targetSelector(visId), spec, EMBED_OPTS)
+      .then((result) => {
+        forceSize(result);
+        return result;
+      })
+      .catch((err) => console.error(`Error embedding ${visId}:`, err));
+  }
 
-  /* Render charts with error display */
-  try { await vegaEmbed("#vis1", spec1, embedOptions); } catch (e) { showError("#vis1", e); }
-  try { await vegaEmbed("#vis2", spec2, embedOptions); } catch (e) { showError("#vis2", e); }
-  try { await vegaEmbed("#vis3", spec3, embedOptions); } catch (e) { showError("#vis3", e); }
-  try { await vegaEmbed("#vis4", spec4, embedOptions); } catch (e) { showError("#vis4", e); }
-
+  // =========================
+  // EMBED ALL 4 VISUALIZATIONS
+  // =========================
+  embedVis("vis1", VIS1_SPEC); // Vis 1 now renders into the SAME inner wrapper as others
+  embedVis("vis2", VIS2_SPEC);
+  embedVis("vis3", VIS3_SPEC);
+  embedVis("vis4", VIS4_SPEC);
 });
