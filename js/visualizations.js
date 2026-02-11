@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     data: { url: dataUrl },
 
     width: 1200,                 // enforce wide
+     height: 520,
     autosize: { type: "none" },  // prevent auto shrinking
 
     params: [
