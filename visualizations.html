@@ -1,37 +1,81 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html> <!-- Standard HTML5 document -->
+<html lang="en"> <!-- Page language -->
 <head>
-  <title>Video Game Visualizations</title>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizations | Mustafa Syed</title> <!-- Browser tab title -->
 
-  <link rel="stylesheet" type="text/css" href="css/vendor.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="utf-8"> <!-- Correct character encoding -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- Legacy compatibility -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Mobile-friendly scaling -->
+  <meta name="format-detection" content="telephone=no"> <!-- Avoid auto phone links on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Better iOS web-app behavior -->
 
+  <meta name="description" content="Interactive Vega-Lite visualizations of video game sales."> <!-- SEO description -->
+
+  <link rel="stylesheet" type="text/css" href="css/vendor.css"> <!-- Your template vendor styles --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+        crossorigin="anonymous"> <!-- Bootstrap --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
+  <link rel="stylesheet" type="text/css" href="style.css"> <!-- Your main theme stylesheet --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html)[2](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/style.css) -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"> <!-- Faster Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!-- Faster Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap"
+        rel="stylesheet"> <!-- Roboto font to match your theme --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
+
+  <!-- Small page-specific polish (keeps your theme colors and spacing) -->
   <style>
-    .vis-card { border-radius: 16px; }
-    .vis-box { min-height: 420px; }
-    .question-text {
-      color: var(--bs-gray-dark);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      padding: 0.75rem 0;
-      border-left: 3px solid var(--bs-primary);
-      padding-left: 1rem;
-      margin-bottom: 1.5rem;
-    }
+    .vis-card { border-radius: 18px; } /* Smooth rounded corners */
+    .vis-box { min-height: 460px; } /* Reserve space so page doesn't jump while loading */
+    .vis-note { font-size: 0.95rem; } /* Slightly smaller supporting text */
+    .badge-soft { background: rgba(255,83,74,0.12); color: #d33a32; } /* Matches theme primary */ /* [2](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/style.css) */
+    .breadcrumb a { text-decoration: none; } /* Cleaner breadcrumb */
   </style>
 </head>
 
-<body class="bg-body homepage post-template">
+<body class="bg-body homepage post-template"> <!-- Keep same body classes as your theme --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
 
-  <a class="menu-btn"><span></span></a>
+  <!-- Inline SVG icons used by your sidebar menu (social + cart). -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+    <defs>
+      <symbol id="instagram" viewBox="0 0 15 15">
+        <path fill="none" stroke="currentColor"
+          d="M11 3.5h1M4.5.5h6a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4h-6a4 4 0 0 1-4-4v-6a4 4 0 0 1 4-4Zm3 10a3 3 0 1 1 0-6a3 3 0 0 1 0 6Z"/>
+      </symbol>
 
-  <div class="container-fluid">
+      <symbol id="facebook" viewBox="0 0 15 15">
+        <path fill="none" stroke="currentColor"
+          d="M7.5 14.5a7 7 0 1 1 0-14a7 7 0 0 1 0 14Zm0 0v-8a2 2 0 0 1 2-2h.5m-5 4h5"/>
+      </symbol>
 
-    <header id="header-nav" class="col-lg-2 position-fixed px-5 bg-white h-100">
+      <symbol id="twitter" viewBox="0 0 15 15">
+        <path fill="currentColor"
+          d="m14.478 1.5l.5-.033a.5.5 0 0 0-.871-.301l.371.334Zm-.498 2.959a.5.5 0 1 0-1 0h1Zm-6.49.082h-.5h.5Zm0 .959h.5h-.5Zm-6.99 7V12a.5.5 0 0 0-.278.916L.5 12.5Zm.998-11l.469-.175a.5.5 0 0 0-.916-.048l.447.223Zm3.994 9l.354.353a.5.5 0 0 0-.195-.827l-.159.474Zm7.224-8.027l-.37.336l.18.199l.265-.04l-.075-.495Z"/>
+      </symbol>
+
+      <symbol id="pinterest" viewBox="0 0 15 15">
+        <path fill="none" stroke="currentColor"
+          d="m4.5 13.5l3-7m-3.236 3a2.989 2.989 0 0 1-.764-2V7A3.5 3.5 0 0 1 7 3.5h1A3.5 3.5 0 0 1 11.5 7v.5a3 3 0 0 1-3 3a2.081 2.081 0 0 1-1.974-1.423L6.5 9m1 5.5a7 7 0 1 1 0-14a7 7 0 0 1 0 14Z"/>
+      </symbol>
+
+      <symbol id="youtube" viewBox="0 0 15 15">
+        <path fill="currentColor"
+          d="m1.61 12.738l-.104.489l.105-.489Zm11.78 0l.104.489l-.105-.489Zm0-10.476l.104-.489l-.105.489Zm-11.78 0l.106.489l-.105-.489ZM6 5.5v4h1v-4H6Z"/>
+      </symbol>
+
+      <symbol id="cart" viewBox="0 0 24 24">
+        <path fill="currentColor"
+          d="M8.5 19a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 8.5 19ZM19 16H7a1 1 0 0 1 0-2h8.491a3.013 3.013 0 0 0 2.885-2.176l1.585-5.55A1 1 0 0 0 19 5H6.74a3.007 3.007 0 0 0-2.82-2H3a1 1 0 0 0 0 2h.921a1.005 1.005 0 0 1 .962.725l1.796 6.292A3 3 0 0 0 7 18h12a1 1 0 0 0 0-2Z"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <a class="menu-btn"><span></span></a> <!-- Mobile menu button (template behavior) --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
+
+  <div class="container-fluid overflow-hidden"> <!-- Same overall wrapper as your index --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
+
+    <!-- ===== Sidebar (matches your index.html structure) ===== -->
+    <header id="header-nav" class="col-lg-2 position-fixed px-5 bg-white h-100"> <!-- Fixed left sidebar --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
       <div class="header-wrap d-flex flex-column justify-content-between h-100">
 
         <div class="navigation">
@@ -43,116 +87,180 @@
 
           <nav id="one-page-menu" class="vertical-menu my-5">
             <ul class="menu-list list-unstyled">
-              <li><a href="index.html#billboard" class="nav-link">Home</a></li>
+              <!-- These go back to your one-page sections on index.html -->
+              <li><a href="index.html#home" class="nav-link">Home</a></li>
               <li><a href="index.html#about" class="nav-link">About</a></li>
               <li><a href="index.html#experience" class="nav-link">Experience</a></li>
               <li><a href="index.html#portfolio" class="nav-link">Works</a></li>
               <li><a href="index.html#contact" class="nav-link">Contact</a></li>
-              <li><a href="visualizations.html" class="nav-link fw-bold">Visualizations</a></li>
+
+              <!-- This is the current page -->
+              <li><a href="visualizations.html" class="nav-link active">Visualizations</a></li>
+
+              <!-- Keep template PRO link styling (optional but matches template) -->
+              <li>
+                <a href="https://templatesjungle.gumroad.com/l/julia-onepage-portfolio"
+                   target="_blank"
+                   class="nav-link d-flex justify-content-between align-items-center fw-bold">
+                  <span>Get PRO</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24">
+                    <use xlink:href="#cart"></use>
+                  </svg>
+                </a>
+              </li>
             </ul>
           </nav>
         </div>
 
         <div class="mt-5">
-          <div class="py-4 border-top">
-            <p class="small">Made by Mustafa</p>
+          <div class="email-links">
+            <a href="mailto:contact@yoursite.com" class="py-3 my-3 border-bottom d-flex">
+              contact@yoursite.com
+            </a>
           </div>
+
+          <ul class="list-unstyled d-flex justify-content-start flex-wrap gap-3">
+            <li><a href="#" class="text-dark"><svg width="24" height="24"><use xlink:href="#facebook"></use></svg></a></li>
+            <li><a href="#" class="text-dark"><svg width="24" height="24"><use xlink:href="#twitter"></use></svg></a></li>
+            <li><a href="#" class="text-dark"><svg width="24" height="24"><use xlink:href="#youtube"></use></svg></a></li>
+            <li><a href="#" class="text-dark"><svg width="24" height="24"><use xlink:href="#pinterest"></use></svg></a></li>
+            <li><a href="#" class="text-dark"><svg width="24" height="24"><use xlink:href="#instagram"></use></svg></a></li>
+          </ul>
+
+          <!-- Keep TemplatesJungle credit (license requirement for free version) -->
+          <div class="py-4 border-top">
+            <p>HTML by <a href="https://templatesjungle.com/" target="_blank">TemplatesJungle</a></p>
+          </div> <!-- [3](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/readme.txt) -->
         </div>
 
       </div>
     </header>
+    <!-- ===== End Sidebar ===== -->
 
-    <main class="col-lg-10 offset-lg-2">
-      <div class="container py-5">
+    <!-- ===== Main Content ===== -->
+    <main class="col-lg-10 offset-lg-2"> <!-- Same right-side main layout --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
+      <div class="container">
 
-        <div class="mb-4">
-          <h1 class="display-5">Video Game Sales Visualizations</h1>
-          <p class="text-muted">Interactive data explorations using Vega-Lite</p>
+        <!-- Wrapper matches your index spacing style -->
+        <div class="justify-content-center px-1 mx-1 px-xl-5 mx-xl-5">
+
+          <!-- Professional page header section (same "bg-text" style your theme uses) -->
+          <section class="my-5 py-5 bg-text" data-text="06"> <!-- Large background number comes from your CSS --> <!-- [2](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/style.css) -->
+
+            <div class="row justify-content-center mb-4">
+              <div class="col-lg-10">
+                <span class="text-muted text-uppercase">Data Visualization</span>
+                <h2 class="display-1 txt-fx slide-up">Interactive Visualizations</h2>
+
+                <nav aria-label="breadcrumb" class="mt-3">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Visualizations</li>
+                  </ol>
+                </nav>
+
+                <p class="vis-note text-muted mt-3 mb-0">
+                  Below are four Vega-Lite charts exploring video game sales by genre, platform, time, and region.
+                  Each chart is interactive (hover tooltips + filters where available).
+                </p>
+
+                <div class="mt-3 d-flex flex-wrap gap-2">
+                  <span class="badge badge-soft">Vega-Lite</span>
+                  <span class="badge badge-soft">GitHub Pages</span>
+                  <span class="badge badge-soft">Interactive</span>
+                  <a class="btn btn-outline-primary btn-sm ms-auto"
+                     href="data/videogames_wide.csv"
+                     target="_blank"
+                     rel="noopener">
+                    Download Dataset
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chart cards -->
+            <div class="row justify-content-center g-4">
+              <div class="col-lg-10">
+                <div class="card shadow-sm vis-card">
+                  <div class="card-body p-4">
+                    <h3 class="h4 mb-1">1) Global Sales by Genre and Platform</h3>
+                    <p class="text-muted mb-3">
+                      <strong>Q1:</strong> Which genre–platform combinations generate the highest total global sales?
+                      <br>
+                      <strong>Q2:</strong> Do a few platforms dominate across many genres?
+                    </p>
+                    <div id="vis1" class="vis-box">Loading chart…</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-10">
+                <div class="card shadow-sm vis-card">
+                  <div class="card-body p-4">
+                    <h3 class="h4 mb-1">2) Sales Over Time by Platform and Genre</h3>
+                    <p class="text-muted mb-3">
+                      <strong>Q1:</strong> How do sales evolve over time for platforms within a chosen genre?
+                      <br>
+                      <strong>Q2:</strong> Are there noticeable “peak years” for specific platforms?
+                    </p>
+                    <div id="vis2" class="vis-box">Loading chart…</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-10">
+                <div class="card shadow-sm vis-card">
+                  <div class="card-body p-4">
+                    <h3 class="h4 mb-1">3) Regional Sales vs Platform</h3>
+                    <p class="text-muted mb-3">
+                      <strong>Q1:</strong> For each platform, which region contributes the most total sales?
+                      <br>
+                      <strong>Q2:</strong> Do platforms show strong regional preference patterns?
+                    </p>
+                    <div id="vis3" class="vis-box">Loading chart…</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-10">
+                <div class="card shadow-sm vis-card">
+                  <div class="card-body p-4">
+                    <h3 class="h4 mb-1">4) Visual Story — Japan Share vs Global Sales</h3>
+                    <p class="text-muted mb-3">
+                      <strong>Q1:</strong> Which games appear “Japan‑centric” (high JP share of global sales)?
+                      <br>
+                      <strong>Q2:</strong> Do Japan‑centric games cluster by genre or platform?
+                    </p>
+                    <div id="vis4" class="vis-box">Loading chart…</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </section>
         </div>
-
-        <div class="row g-4">
-
-          <div class="col-12">
-            <div class="card shadow-sm vis-card">
-              <div class="card-body">
-                <h3 class="h5">1) Global Sales by Genre and Platform</h3>
-                <div class="question-text">
-                  <strong>Research Questions:</strong><br>
-                  1. Which genre-platform combinations generate the highest global sales?<br>
-                  2. Are certain platforms dominated by specific genres?
-                </div>
-                <div id="vis1" class="vis-box"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12">
-            <div class="card shadow-sm vis-card">
-              <div class="card-body">
-                <h3 class="h5">2) Sales Over Time by Platform and Genre</h3>
-                <div class="question-text">
-                  <strong>Research Questions:</strong><br>
-                  1. How have video game sales evolved across different platforms over the years?<br>
-                  2. Which platforms experienced the most dramatic rise or decline in sales?
-                </div>
-                <div id="vis2" class="vis-box"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12">
-            <div class="card shadow-sm vis-card">
-              <div class="card-body">
-                <h3 class="h5">3) Regional Sales vs Platform</h3>
-                <div class="question-text">
-                  <strong>Research Questions:</strong><br>
-                  1. Do gaming platforms show different popularity levels across regions (NA, EU, JP, Others)?<br>
-                  2. Which regions contribute most to each platform's total sales?
-                </div>
-                <div id="vis3" class="vis-box"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12">
-            <div class="card shadow-sm vis-card">
-              <div class="card-body">
-                <h3 class="h5">4) Visual Story: Japan Share vs Global Sales</h3>
-                <div class="question-text">
-                  <strong>Research Questions:</strong><br>
-                  1. Which games have unusually high sales in Japan compared to their global performance?<br>
-                  2. What genres or publishers tend to create "Japan-centric" games?
-                </div>
-                <div id="vis4" class="vis-box"></div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
       </div>
     </main>
+    <!-- ===== End Main ===== -->
 
   </div>
 
-  <!-- ============================================ -->
-  <!-- SCRIPTS IN NEW ORDER (IMPORTANT!)           -->
-  <!-- Vega libraries FIRST, then template scripts -->
-  <!-- ============================================ -->
+  <!-- Your template scripts (same pattern as index) -->
+  <script src="js/jquery-1.11.0.min.js"></script> <!-- Template dependency --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+          crossorigin="anonymous"></script> <!-- Bootstrap JS --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
+  <script src="js/plugins.js"></script> <!-- Template plugins --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
+  <script src="js/script.js"></script> <!-- Template behavior --> <!-- [1](https://collegedouglas-my.sharepoint.com/personal/syedm5_douglascollege_ca/Documents/Microsoft%20Copilot%20Chat%20Files/index.html) -->
 
-  <!-- STEP 1: Load Vega visualization libraries FIRST -->
-  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <!-- Vega libraries (must be loaded BEFORE your visualization script) -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script> <!-- Vega engine -->
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script> <!-- Vega-Lite grammar -->
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script> <!-- Embeds charts into divs -->
 
-  <!-- STEP 2: Load your visualization code -->
-  <script src="js/visualizations.js"></script>
-
-  <!-- STEP 3: Load template scripts LAST -->
-  <script src="js/jquery-1.11.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="js/plugins.js"></script>
-  <script src="js/script.js"></script>
+  <!-- Your chart renderer -->
+  <script src="js/visualizations.js"></script> <!-- Draws charts into #vis1..#vis4 -->
 
 </body>
 </html>
+``
