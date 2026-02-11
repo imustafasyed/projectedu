@@ -1,106 +1,91 @@
-/* =============================== */
-/*  FINAL: js/visualizations.js    */
-/* =============================== */
+/* ===============================
+   FINAL: js/visualizations.js
+   - Reliable embedding into #visX .vis-inner
+   - Shows errors inside each chart container
+   - Easy Vis 1 (bar chart by Genre)
+   =============================== */
 
-const dataUrl = "data/videogames_wide.csv"; // CSV path //
+const dataUrl = "data/videogames_wide.csv"; // ✅ Make sure this file exists at this path
 
-const embedOptions = { // Embed options //
-  actions: false, // Hide action buttons //
-  renderer: "svg" // Crisp charts //
+const embedOptions = {
+  actions: false,
+  renderer: "canvas"
 };
 
-function showError(targetId, err) { // Show readable errors on the page //
-  const el = document.querySelector(targetId); // Find container //
-  if (el) { // If it exists //
-    el.innerHTML = `<div style="color:#b00020;font-weight:700;">Chart failed to load</div>
-                    <pre style="white-space:pre-wrap;">${String(err)}</pre>`; // Print error //
-  }
-  console.error(err); // Also log error //
+// Use inner wrapper if present (matches your HTML structure)
+function target(visId) {
+  const inner = document.querySelector(`#${visId} .vis-inner`);
+  return inner ? `#${visId} .vis-inner` : `#${visId}`;
 }
 
-window.addEventListener("load", async () => { // Run after page is fully loaded //
-
-
-
-/* ---------------------------
-   VIS 1 — SIMPLE BAR CHART
-   Total Global Sales by Genre (easy + clean)
-   Click a bar to highlight, click again to clear
-   --------------------------- */
-const spec1 = {
-  $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-  data: { url: dataUrl },
-
-  transform: [
-    // Sum global sales per genre
-    {
-      aggregate: [{ op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }],
-      groupby: ["Genre"]
-    }
-  ],
-
-  width: 1200,
-  height: 520,
-  autosize: { type: "none" },
-
-  // Click-to-highlight (simple + intuitive)
-  params: [
-    {
-      name: "genrePick",
-      select: { type: "point", fields: ["Genre"], toggle: true } // toggle lets user click again to clear
-    }
-  ],
-
-  mark: { type: "bar" },
-
-  encoding: {
-    x: {
-      field: "Genre",
-      type: "nominal",
-      title: "Genre",
-      sort: "-y",
-      axis: { labelAngle: 0 }
-    },
-    y: {
-      field: "Total_Global_Sales",
-      type: "quantitative",
-      title: "Total Global Sales (Millions)"
-    },
-
-    // Keep it readable: one color + highlight on click
-    color: {
-      condition: { param: "genrePick", value: "#2563eb" }, // highlighted bars
-      value: "#cbd5e1"                                     // default bars
-    },
-
-    tooltip: [
-      { field: "Genre", type: "nominal", title: "Genre" },
-      { field: "Total_Global_Sales", type: "quantitative", title: "Global Sales", format: ".2f" }
-    ]
+function showError(visId, err) {
+  const el = document.querySelector(target(visId)) || document.querySelector(`#${visId}`);
+  if (el) {
+    el.innerHTML = `
+      <div style="padding:12px;border:1px solid #f5c2c7;background:#f8d7da;border-radius:10px;color:#842029;">
+        <strong>Chart failed to load</strong><br/>
+        <code style="white-space:pre-wrap;">${String(err)}</code>
+      </div>
+    `;
   }
-};
+  console.error(`[${visId}]`, err);
+}
 
-  // -------------------------------
-  // VIS 2 / VIS 3 / VIS 4
-  // -------------------------------
-  // Leave your existing Vis 2–4 code exactly as it is.
-});
+document.addEventListener("DOMContentLoaded", async () => {
+  // If Vega libraries didn’t load, show a clear message
+  if (typeof vegaEmbed !== "function") {
+    ["vis1", "vis2", "vis3", "vis4"].forEach(id =>
+      showError(id, "vegaEmbed is not available. Check Vega/Vega-Lite/Vega-Embed script tags in HTML.")
+    );
+    return;
+  }
 
-  /* ---------------- VIS 2 (FIXED: selection params live in ONE layer) ---------------- */
+  /* =========================
+     VIS 1 (EASY): Total Global Sales by Genre
+     ========================= */
+  const spec1 = {
+    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    data: { url: dataUrl },
+    width: 1200,
+    height: 520,
+    autosize: { type: "none" },
+
+    transform: [
+      { aggregate: [{ op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }], groupby: ["Genre"] }
+    ],
+
+    mark: { type: "bar" },
+    encoding: {
+      x: { field: "Genre", type: "nominal", title: "Genre", sort: "-y", axis: { labelAngle: 0 } },
+      y: { field: "Total_Global_Sales", type: "quantitative", title: "Total Global Sales (Millions)" },
+      tooltip: [
+        { field: "Genre", type: "nominal", title: "Genre" },
+        { field: "Total_Global_Sales", type: "quantitative", title: "Global Sales", format: ".2f" }
+      ],
+      color: { value: "#2563eb" }
+    }
+  };
+
+  /* =========================
+     VIS 2: Sales Over Time (by Platform) with Genre dropdown + legend highlight + zoom
+     ========================= */
   const spec2 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
-    width: "container", // Always 1200px as you requested //
+    width: 1200,
     height: 420,
-    autosize: { type: "fit", contains: "padding" },
+    autosize: { type: "none" },
 
-    params: [ // Only NON-selection param at top level //
+    params: [
       {
         name: "pickGenre",
         value: "Action",
         bind: {
           input: "select",
-          options: ["Action","Sports","Shooter","Role-Playing","Platform","Racing","Misc","Fighting","Simulation","Puzzle","Adventure","Strategy"],
+          options: [
+            "Action","Sports","Shooter","Role-Playing","Platform","Racing","Misc",
+            "Fighting","Simulation","Puzzle","Adventure","Strategy"
+          ],
           name: "Choose Genre: "
         }
       }
@@ -110,29 +95,18 @@ const spec1 = {
       { filter: "datum.Year != null && datum.Year != 'N/A'" },
       { calculate: "toNumber(datum.Year)", as: "YearNum" },
       { filter: "datum.Genre === pickGenre" },
-      { aggregate: [{ op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }], groupby: ["YearNum","Platform"] }
+      {
+        aggregate: [{ op: "sum", field: "Global_Sales", as: "Total_Global_Sales" }],
+        groupby: ["YearNum", "Platform"]
+      }
     ],
 
     layer: [
       {
-        /* Put ALL selection params ONLY in this FIRST layer to avoid duplicate signal bugs. */
         params: [
-          {
-            name: "platformPick",
-            select: { type: "point", fields: ["Platform"], toggle: false }, // Single-select //
-            bind: "legend",
-            clear: "dblclick"
-          },
-          {
-            name: "hoverPoint",
-            select: { type: "point", fields: ["Platform"], nearest: true, on: "mouseover", clear: "mouseout" }
-          },
-          {
-            name: "zoomPan",
-            select: { type: "interval", bind: "scales" } // Zoom/pan //
-          }
+          { name: "platformPick", select: { type: "point", fields: ["Platform"], toggle: false }, bind: "legend", clear: "dblclick" },
+          { name: "zoomPan", select: { type: "interval", bind: "scales" } }
         ],
-
         mark: { type: "line", strokeWidth: 2 },
         encoding: {
           x: { field: "YearNum", type: "quantitative", title: "Year" },
@@ -140,44 +114,30 @@ const spec1 = {
           color: { field: "Platform", type: "nominal", title: "Platform" },
           opacity: { condition: { param: "platformPick", value: 1 }, value: 0.12 }
         }
-      },
-      {
-        mark: { type: "point", filled: true, size: 70 },
-        encoding: {
-          x: { field: "YearNum", type: "quantitative" },
-          y: { field: "Total_Global_Sales", type: "quantitative" },
-          color: { field: "Platform", type: "nominal" },
-          opacity: { condition: { param: "hoverPoint", value: 1 }, value: 0 },
-          tooltip: [
-            { field: "Platform", type: "nominal" },
-            { field: "YearNum", type: "quantitative", title: "Year" },
-            { field: "Total_Global_Sales", type: "quantitative", format: ".2f" }
-          ]
-        }
       }
     ]
   };
 
-  /* ---------------- VIS 3 ---------------- */
+  /* =========================
+     VIS 3: Regional Sales vs Platform (stacked bars)
+     ========================= */
   const spec3 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
-    width: "container", // Always 1200px //
+    width: 1200,
     height: 560,
-    autosize: { type: "fit", contains: "padding" },
-    params: [
-      { name: "regionPick", select: { type: "point", fields: ["Region"], toggle: false }, bind: "legend", clear: "dblclick" }
-    ],
+    autosize: { type: "none" },
+
     transform: [
-      { fold: ["NA_Sales","EU_Sales","JP_Sales","Other_Sales"], as: ["Region","Sales"] },
-      { aggregate: [{ op: "sum", field: "Sales", as: "Total_Sales" }], groupby: ["Platform","Region"] }
+      { fold: ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"], as: ["Region", "Sales"] },
+      { aggregate: [{ op: "sum", field: "Sales", as: "Total_Sales" }], groupby: ["Platform", "Region"] }
     ],
+
     mark: "bar",
     encoding: {
-      y: { field: "Platform", type: "nominal", sort: "-x", title: "Platform" },
-      x: { field: "Total_Sales", type: "quantitative", title: "Total Sales" },
+      y: { field: "Platform", type: "nominal", title: "Platform", sort: "-x" },
+      x: { field: "Total_Sales", type: "quantitative", title: "Total Sales (Millions)" },
       color: { field: "Region", type: "nominal", title: "Region" },
-      opacity: { condition: { param: "regionPick", value: 1 }, value: 0.25 },
       tooltip: [
         { field: "Platform", type: "nominal" },
         { field: "Region", type: "nominal" },
@@ -186,25 +146,31 @@ const spec1 = {
     }
   };
 
-  /* ---------------- VIS 4 ---------------- */
+  /* =========================
+     VIS 4: Japan Share vs Global Sales (scatter + brush + zoom)
+     ========================= */
   const spec4 = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { url: dataUrl },
-    width: 1200, // Always 1200px //
+    width: 1200,
     height: 460,
+    autosize: { type: "none" },
+
     params: [
       { name: "brush", select: { type: "interval" } },
       { name: "zoomPan", select: { type: "interval", bind: "scales" } }
     ],
+
     transform: [
       { calculate: "datum.Global_Sales > 0 ? datum.JP_Sales / datum.Global_Sales : null", as: "JP_Share" },
       { filter: "isValid(datum.JP_Share)" },
       { filter: "datum.Global_Sales >= 0.5" }
     ],
+
     mark: { type: "circle", opacity: 0.75, size: 70 },
     encoding: {
-      x: { field: "Global_Sales", type: "quantitative", title: "Global Sales" },
-      y: { field: "JP_Share", type: "quantitative", title: "Japan Share (JP / Global)", scale: { domain: [0, 1] } },
+      x: { field: "Global_Sales", type: "quantitative", title: "Global Sales (Millions)" },
+      y: { field: "JP_Share", type: "quantitative", title: "Japan Share (JP/Global)", scale: { domain: [0, 1] } },
       color: { field: "Genre", type: "nominal", title: "Genre" },
       opacity: { condition: { param: "brush", value: 1 }, value: 0.15 },
       tooltip: [
@@ -218,10 +184,9 @@ const spec1 = {
     }
   };
 
-  /* Render charts with error display */
-  try { await vegaEmbed("#vis1", spec1, embedOptions); } catch (e) { showError("#vis1", e); }
-  try { await vegaEmbed("#vis2", spec2, embedOptions); } catch (e) { showError("#vis2", e); }
-  try { await vegaEmbed("#vis3", spec3, embedOptions); } catch (e) { showError("#vis3", e); }
-  try { await vegaEmbed("#vis4", spec4, embedOptions); } catch (e) { showError("#vis4", e); }
-
+  // Render each chart safely (so one failure doesn’t block others)
+  try { await vegaEmbed(target("vis1"), spec1, embedOptions); } catch (e) { showError("vis1", e); }
+  try { await vegaEmbed(target("vis2"), spec2, embedOptions); } catch (e) { showError("vis2", e); }
+  try { await vegaEmbed(target("vis3"), spec3, embedOptions); } catch (e) { showError("vis3", e); }
+  try { await vegaEmbed(target("vis4"), spec4, embedOptions); } catch (e) { showError("vis4", e); }
 });
