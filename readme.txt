@@ -1,18 +1,17 @@
-Hello, Explorer of Ideas!
-Welcome to my GitHub Corner — where higher education meets creativity, HCI sparks curiosity, and project management keeps the chaos charmingly organized.
-I’m passionate about understanding how people learn, how they interact with technology, and how thoughtful systems (and good coffee) can bring complex projects to life.
-What You’ll Find Here
+# Welcome
 
- HCI Experiments — interfaces, prototypes, and designs inspired by real human behavior
- Higher Ed Insights — tools, visualizations, and reflections on learning experiences
- Project Management Goodies — dashboards, frameworks, and neat little automations
+To My GitHub space which brings together my interests in higher education, human-computer interaction (HCI), and project management.
 
- My Work Style
-Curious. Empathetic. Organized.
-Think researcher energy, UX brain, and PM-level color-coded spreadsheets.
- Let’s Connect
-If you enjoy building meaningful experiences, redesigning the way people learn, or just love a good user flow — you’re in the right place.
-Pull up a chair, click around, and feel free to reach out!
+## What you'll find here
+- HCI work: prototypes, usability-focused designs, and interaction experiments  
+- Higher education projects: learning tools, research-inspired builds, and reflections  
+- Project management artifacts: frameworks, templates, and lightweight automations  
+
+## How I approach work
+I like building things that are clear, useful, and grounded in real user needs. I aim to balance thoughtful design with practical execution, from early discovery through delivery.
+
+## Connect
+If you’re interested in collaborating or exchanging ideas in higher education, HCI, or project delivery, feel free to reach out.
 
 
 CREDITS & REFERENCES
@@ -37,6 +36,7 @@ Swiper Slider - https://swiperjs.com/
 Slick Slider - https://kenwheeler.github.io/slick/
 Chocolat.js – a Free Lightbox Plugin -http://chocolat.insipi.de/
 Magnific Lightbox - https://github.com/dimsemenov/Magnific-Popup
+
 
 
 
