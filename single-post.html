@@ -308,9 +308,91 @@
             <div class="row">
               <div class="col-lg-12">
                 <div class="portfolio-image py-5">
-                  <figure>
-                    <img src="images/portfolio-image-3.jpg" alt="portfolio" class="img-fluid">
-                  </figure>
+                  <!-- ============================================== -->
+<!-- SIMPLE PC vs PS2 COMPARISON WITH INTERACTION   -->
+<!-- Copy this and paste after "Artify Illustrations" -->
+<!-- ============================================== -->
+
+<div style="margin: 2rem 0; padding: 2rem; background: #f8f9fa; border-radius: 10px;">
+  
+  <h3 style="text-align: center; margin-bottom: 0.5rem;">Platform Sales Comparison</h3>
+  <p style="text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 1.5rem;">
+    Click Steve Fox to make him jump! 👊
+  </p>
+  
+  <!-- Simple SVG Chart -->
+  <svg width="100%" height="400" viewBox="0 0 600 400">
+    
+    <!-- PC Bar (Blue) -->
+    <rect x="100" y="100" width="150" height="250" fill="#4169E1" rx="5"/> <!-- Blue rectangle for PC -->
+    <text x="175" y="85" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">PC</text> <!-- PC label -->
+    <text x="175" y="370" text-anchor="middle" font-size="16" fill="#333">179.8M</text> <!-- PC sales number -->
+    
+    <!-- PS2 Bar (Purple) -->
+    <rect x="350" y="210" width="150" height="140" fill="#9370DB" rx="5"/> <!-- Purple rectangle for PS2 -->
+    <text x="425" y="195" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">PS2</text> <!-- PS2 label -->
+    <text x="425" y="370" text-anchor="middle" font-size="16" fill="#333">59.3M</text> <!-- PS2 sales number -->
+    
+    <!-- Steve Fox Character (clickable boxer) -->
+    <g id="steve-fox" style="cursor: pointer;"> <!-- Group for Steve Fox with pointer cursor -->
+      <g id="boxer-body"> <!-- Inner group that will move -->
+        <!-- Head -->
+        <circle cx="70" cy="160" r="8" fill="#FFD700" stroke="#333" stroke-width="2"/> <!-- Gold circle for head -->
+        <!-- Body -->
+        <line x1="70" y1="168" x2="70" y2="185" stroke="#333" stroke-width="3"/> <!-- Vertical line for torso -->
+        <!-- Left arm in boxing pose -->
+        <line x1="70" y1="172" x2="60" y2="178" stroke="#333" stroke-width="3"/> <!-- Left arm line -->
+        <!-- Right arm in boxing pose -->
+        <line x1="70" y1="172" x2="80" y2="178" stroke="#333" stroke-width="3"/> <!-- Right arm line -->
+        <!-- Boxing gloves (red) -->
+        <circle cx="60" cy="178" r="4" fill="#FF4444"/> <!-- Left red glove -->
+        <circle cx="80" cy="178" r="4" fill="#FF4444"/> <!-- Right red glove -->
+        <!-- Left leg -->
+        <line x1="70" y1="185" x2="65" y2="200" stroke="#333" stroke-width="3"/> <!-- Left leg line -->
+        <!-- Right leg -->
+        <line x1="70" y1="185" x2="75" y2="200" stroke="#333" stroke-width="3"/> <!-- Right leg line -->
+      </g>
+      <!-- Name label below boxer -->
+      <text x="70" y="215" text-anchor="middle" font-size="12" fill="#666">Steve Fox</text> <!-- Character name -->
+    </g>
+    
+    <!-- Title at top -->
+    <text x="300" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#333">
+      Video Game Platform Sales
+    </text>
+    
+  </svg>
+  
+  <!-- Info text -->
+  <p style="text-align: center; color: #666; margin-top: 1rem;">
+    PC platform leads with 3x more total sales than PS2
+  </p>
+  
+</div>
+
+<!-- Simple JavaScript for interaction -->
+<script>
+  // Get the Steve Fox element by its ID
+  var steveFox = document.getElementById('steve-fox');
+  var boxerBody = document.getElementById('boxer-body');
+  
+  // Add click event listener to Steve Fox
+  steveFox.addEventListener('click', function() {
+    // Make boxer jump up
+    boxerBody.style.transition = 'transform 0.3s'; // Smooth animation over 0.3 seconds
+    boxerBody.style.transform = 'translateY(-30px)'; // Move up 30 pixels
+    
+    // After 300ms, make him come back down
+    setTimeout(function() {
+      boxerBody.style.transform = 'translateY(0)'; // Return to original position
+    }, 300); // Wait 300 milliseconds (0.3 seconds)
+  });
+</script>
+
+<!-- ============================================== -->
+<!-- END OF CODE                                    -->
+<!-- ============================================== -->
+					
                   <figcaption>Nostaligia Portrait</figcaption>
                 </div>
               </div>
